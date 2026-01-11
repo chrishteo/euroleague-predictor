@@ -922,9 +922,9 @@ export default function EuroLeaguePredictor() {
 
       // Save simulation results to localStorage
       try {
-        await window.storage.set('euroleague-predictions', JSON.stringify(results));
-        await window.storage.set('euroleague-playoffs', JSON.stringify(playoffData));
-        await window.storage.set('euroleague-gamepredictions', JSON.stringify(gamePredictions));
+        window.storage.set('euroleague-predictions', JSON.stringify(results));
+        window.storage.set('euroleague-playoffs', JSON.stringify(playoffData));
+        window.storage.set('euroleague-gamepredictions', JSON.stringify(gamePredictions));
       } catch (e) {
         console.error('Failed to save simulation results:', e);
       }
