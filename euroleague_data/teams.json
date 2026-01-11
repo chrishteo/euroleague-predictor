@@ -1,0 +1,162 @@
+[
+  {
+    "code": "HTA",
+    "name": "Hapoel IBI Tel Aviv",
+    "wins": 14,
+    "losses": 6,
+    "ptsFor": 1758,
+    "ptsAgainst": 1643
+  },
+  {
+    "code": "MCO",
+    "name": "AS Monaco",
+    "wins": 14,
+    "losses": 7,
+    "ptsFor": 1909,
+    "ptsAgainst": 1752
+  },
+  {
+    "code": "PAM",
+    "name": "Valencia Basket",
+    "wins": 14,
+    "losses": 7,
+    "ptsFor": 1896,
+    "ptsAgainst": 1797
+  },
+  {
+    "code": "BAR",
+    "name": "FC Barcelona",
+    "wins": 14,
+    "losses": 7,
+    "ptsFor": 1804,
+    "ptsAgainst": 1744
+  },
+  {
+    "code": "ULK",
+    "name": "Fenerbahce Beko Istanbul",
+    "wins": 13,
+    "losses": 7,
+    "ptsFor": 1640,
+    "ptsAgainst": 1596
+  },
+  {
+    "code": "MAD",
+    "name": "Real Madrid",
+    "wins": 13,
+    "losses": 8,
+    "ptsFor": 1830,
+    "ptsAgainst": 1769
+  },
+  {
+    "code": "PAN",
+    "name": "Panathinaikos AKTOR Athens",
+    "wins": 13,
+    "losses": 8,
+    "ptsFor": 1837,
+    "ptsAgainst": 1784
+  },
+  {
+    "code": "OLY",
+    "name": "Olympiacos Piraeus",
+    "wins": 12,
+    "losses": 8,
+    "ptsFor": 1766,
+    "ptsAgainst": 1688
+  },
+  {
+    "code": "ZAL",
+    "name": "Zalgiris Kaunas",
+    "wins": 12,
+    "losses": 9,
+    "ptsFor": 1834,
+    "ptsAgainst": 1708
+  },
+  {
+    "code": "RED",
+    "name": "Crvena Zvezda Meridianbet Belgrade",
+    "wins": 11,
+    "losses": 10,
+    "ptsFor": 1787,
+    "ptsAgainst": 1771
+  },
+  {
+    "code": "MIL",
+    "name": "EA7 Emporio Armani Milan",
+    "wins": 11,
+    "losses": 10,
+    "ptsFor": 1761,
+    "ptsAgainst": 1755
+  },
+  {
+    "code": "VIR",
+    "name": "Virtus Bologna",
+    "wins": 10,
+    "losses": 11,
+    "ptsFor": 1733,
+    "ptsAgainst": 1743
+  },
+  {
+    "code": "DUB",
+    "name": "Dubai Basketball",
+    "wins": 10,
+    "losses": 11,
+    "ptsFor": 1807,
+    "ptsAgainst": 1850
+  },
+  {
+    "code": "TEL",
+    "name": "Maccabi Rapyd Tel Aviv",
+    "wins": 8,
+    "losses": 13,
+    "ptsFor": 1855,
+    "ptsAgainst": 1915
+  },
+  {
+    "code": "PRS",
+    "name": "Paris Basketball",
+    "wins": 7,
+    "losses": 13,
+    "ptsFor": 1804,
+    "ptsAgainst": 1843
+  },
+  {
+    "code": "BAS",
+    "name": "Kosner Baskonia Vitoria-Gasteiz",
+    "wins": 7,
+    "losses": 14,
+    "ptsFor": 1810,
+    "ptsAgainst": 1880
+  },
+  {
+    "code": "MUN",
+    "name": "FC Bayern Munich",
+    "wins": 7,
+    "losses": 14,
+    "ptsFor": 1666,
+    "ptsAgainst": 1777
+  },
+  {
+    "code": "IST",
+    "name": "Anadolu Efes Istanbul",
+    "wins": 6,
+    "losses": 15,
+    "ptsFor": 1644,
+    "ptsAgainst": 1752
+  },
+  {
+    "code": "ASV",
+    "name": "LDLC ASVEL Villeurbanne",
+    "wins": 6,
+    "losses": 15,
+    "ptsFor": 1625,
+    "ptsAgainst": 1802
+  },
+  {
+    "code": "PAR",
+    "name": "Partizan Mozzart Bet Belgrade",
+    "wins": 6,
+    "losses": 15,
+    "ptsFor": 1682,
+    "ptsAgainst": 1879
+  }
+]

@@ -1,0 +1,2065 @@
+// Auto-generated EuroLeague data
+// Generated: 2026-01-11T21:22:58.768271
+// Season: 2025-2026
+
+export const INITIAL_TEAMS = [
+  {
+    "code": "HTA",
+    "name": "Hapoel IBI Tel Aviv",
+    "wins": 14,
+    "losses": 6,
+    "ptsFor": 1758,
+    "ptsAgainst": 1643
+  },
+  {
+    "code": "MCO",
+    "name": "AS Monaco",
+    "wins": 14,
+    "losses": 7,
+    "ptsFor": 1909,
+    "ptsAgainst": 1752
+  },
+  {
+    "code": "PAM",
+    "name": "Valencia Basket",
+    "wins": 14,
+    "losses": 7,
+    "ptsFor": 1896,
+    "ptsAgainst": 1797
+  },
+  {
+    "code": "BAR",
+    "name": "FC Barcelona",
+    "wins": 14,
+    "losses": 7,
+    "ptsFor": 1804,
+    "ptsAgainst": 1744
+  },
+  {
+    "code": "ULK",
+    "name": "Fenerbahce Beko Istanbul",
+    "wins": 13,
+    "losses": 7,
+    "ptsFor": 1640,
+    "ptsAgainst": 1596
+  },
+  {
+    "code": "MAD",
+    "name": "Real Madrid",
+    "wins": 13,
+    "losses": 8,
+    "ptsFor": 1830,
+    "ptsAgainst": 1769
+  },
+  {
+    "code": "PAN",
+    "name": "Panathinaikos AKTOR Athens",
+    "wins": 13,
+    "losses": 8,
+    "ptsFor": 1837,
+    "ptsAgainst": 1784
+  },
+  {
+    "code": "OLY",
+    "name": "Olympiacos Piraeus",
+    "wins": 12,
+    "losses": 8,
+    "ptsFor": 1766,
+    "ptsAgainst": 1688
+  },
+  {
+    "code": "ZAL",
+    "name": "Zalgiris Kaunas",
+    "wins": 12,
+    "losses": 9,
+    "ptsFor": 1834,
+    "ptsAgainst": 1708
+  },
+  {
+    "code": "RED",
+    "name": "Crvena Zvezda Meridianbet Belgrade",
+    "wins": 11,
+    "losses": 10,
+    "ptsFor": 1787,
+    "ptsAgainst": 1771
+  },
+  {
+    "code": "MIL",
+    "name": "EA7 Emporio Armani Milan",
+    "wins": 11,
+    "losses": 10,
+    "ptsFor": 1761,
+    "ptsAgainst": 1755
+  },
+  {
+    "code": "VIR",
+    "name": "Virtus Bologna",
+    "wins": 10,
+    "losses": 11,
+    "ptsFor": 1733,
+    "ptsAgainst": 1743
+  },
+  {
+    "code": "DUB",
+    "name": "Dubai Basketball",
+    "wins": 10,
+    "losses": 11,
+    "ptsFor": 1807,
+    "ptsAgainst": 1850
+  },
+  {
+    "code": "TEL",
+    "name": "Maccabi Rapyd Tel Aviv",
+    "wins": 8,
+    "losses": 13,
+    "ptsFor": 1855,
+    "ptsAgainst": 1915
+  },
+  {
+    "code": "PRS",
+    "name": "Paris Basketball",
+    "wins": 7,
+    "losses": 13,
+    "ptsFor": 1804,
+    "ptsAgainst": 1843
+  },
+  {
+    "code": "BAS",
+    "name": "Kosner Baskonia Vitoria-Gasteiz",
+    "wins": 7,
+    "losses": 14,
+    "ptsFor": 1810,
+    "ptsAgainst": 1880
+  },
+  {
+    "code": "MUN",
+    "name": "FC Bayern Munich",
+    "wins": 7,
+    "losses": 14,
+    "ptsFor": 1666,
+    "ptsAgainst": 1777
+  },
+  {
+    "code": "IST",
+    "name": "Anadolu Efes Istanbul",
+    "wins": 6,
+    "losses": 15,
+    "ptsFor": 1644,
+    "ptsAgainst": 1752
+  },
+  {
+    "code": "ASV",
+    "name": "LDLC ASVEL Villeurbanne",
+    "wins": 6,
+    "losses": 15,
+    "ptsFor": 1625,
+    "ptsAgainst": 1802
+  },
+  {
+    "code": "PAR",
+    "name": "Partizan Mozzart Bet Belgrade",
+    "wins": 6,
+    "losses": 15,
+    "ptsFor": 1682,
+    "ptsAgainst": 1879
+  }
+];
+
+export const INITIAL_GAMES = [
+  {
+    "id": "api-1",
+    "date": "2025-09-30T19:45:00",
+    "round": 1,
+    "home": "IST",
+    "away": "TEL",
+    "homeScore": 85,
+    "awayScore": 78
+  },
+  {
+    "id": "api-2",
+    "date": "2025-09-30T20:30:00",
+    "round": 1,
+    "home": "BAS",
+    "away": "OLY",
+    "homeScore": 96,
+    "awayScore": 102
+  },
+  {
+    "id": "api-3",
+    "date": "2025-09-30T20:00:00",
+    "round": 1,
+    "home": "RED",
+    "away": "MIL",
+    "homeScore": 82,
+    "awayScore": 92
+  },
+  {
+    "id": "api-4",
+    "date": "2025-09-30T18:00:00",
+    "round": 1,
+    "home": "DUB",
+    "away": "PAR",
+    "homeScore": 89,
+    "awayScore": 76
+  },
+  {
+    "id": "api-5",
+    "date": "2025-09-30T18:00:00",
+    "round": 1,
+    "home": "HTA",
+    "away": "BAR",
+    "homeScore": 103,
+    "awayScore": 87
+  },
+  {
+    "id": "api-6",
+    "date": "2025-09-30T20:15:00",
+    "round": 1,
+    "home": "PAN",
+    "away": "MUN",
+    "homeScore": 87,
+    "awayScore": 79
+  },
+  {
+    "id": "api-7",
+    "date": "2025-09-30T20:45:00",
+    "round": 1,
+    "home": "VIR",
+    "away": "MAD",
+    "homeScore": 74,
+    "awayScore": 68
+  },
+  {
+    "id": "api-8",
+    "date": "2025-10-01T19:45:00",
+    "round": 1,
+    "home": "ULK",
+    "away": "PRS",
+    "homeScore": 96,
+    "awayScore": 77
+  },
+  {
+    "id": "api-9",
+    "date": "2025-10-01T19:30:00",
+    "round": 1,
+    "home": "MCO",
+    "away": "ZAL",
+    "homeScore": 84,
+    "awayScore": 89
+  },
+  {
+    "id": "api-10",
+    "date": "2025-10-01T20:00:00",
+    "round": 1,
+    "home": "ASV",
+    "away": "PAM",
+    "homeScore": 77,
+    "awayScore": 80
+  },
+  {
+    "id": "api-11",
+    "date": "2025-10-02T20:30:00",
+    "round": 2,
+    "home": "MUN",
+    "away": "RED",
+    "homeScore": 97,
+    "awayScore": 88
+  },
+  {
+    "id": "api-12",
+    "date": "2025-10-02T20:30:00",
+    "round": 2,
+    "home": "PAR",
+    "away": "MIL",
+    "homeScore": 80,
+    "awayScore": 78
+  },
+  {
+    "id": "api-13",
+    "date": "2025-10-02T20:45:00",
+    "round": 2,
+    "home": "MAD",
+    "away": "OLY",
+    "homeScore": 89,
+    "awayScore": 77
+  },
+  {
+    "id": "api-14",
+    "date": "2025-10-03T19:30:00",
+    "round": 2,
+    "home": "IST",
+    "away": "HTA",
+    "homeScore": 81,
+    "awayScore": 87
+  },
+  {
+    "id": "api-15",
+    "date": "2025-10-03T21:30:00",
+    "round": 2,
+    "home": "TEL",
+    "away": "PRS",
+    "homeScore": 94,
+    "awayScore": 101
+  },
+  {
+    "id": "api-16",
+    "date": "2025-10-03T19:30:00",
+    "round": 2,
+    "home": "MCO",
+    "away": "DUB",
+    "homeScore": 103,
+    "awayScore": 81
+  },
+  {
+    "id": "api-17",
+    "date": "2025-10-03T20:00:00",
+    "round": 2,
+    "home": "ASV",
+    "away": "BAS",
+    "homeScore": 102,
+    "awayScore": 95
+  },
+  {
+    "id": "api-18",
+    "date": "2025-10-03T20:15:00",
+    "round": 2,
+    "home": "PAN",
+    "away": "BAR",
+    "homeScore": 96,
+    "awayScore": 103
+  },
+  {
+    "id": "api-19",
+    "date": "2025-10-03T20:30:00",
+    "round": 2,
+    "home": "PAM",
+    "away": "VIR",
+    "homeScore": 103,
+    "awayScore": 94
+  },
+  {
+    "id": "api-20",
+    "date": "2025-10-03T19:00:00",
+    "round": 2,
+    "home": "ZAL",
+    "away": "ULK",
+    "homeScore": 84,
+    "awayScore": 81
+  },
+  {
+    "id": "api-21",
+    "date": "2025-10-08T20:05:00",
+    "round": 3,
+    "home": "HTA",
+    "away": "TEL",
+    "homeScore": 90,
+    "awayScore": 103
+  },
+  {
+    "id": "api-22",
+    "date": "2025-10-09T20:30:00",
+    "round": 3,
+    "home": "BAS",
+    "away": "PAN",
+    "homeScore": 84,
+    "awayScore": 86
+  },
+  {
+    "id": "api-23",
+    "date": "2025-10-09T20:30:00",
+    "round": 3,
+    "home": "MIL",
+    "away": "MCO",
+    "homeScore": 79,
+    "awayScore": 82
+  },
+  {
+    "id": "api-24",
+    "date": "2025-10-09T20:45:00",
+    "round": 3,
+    "home": "PRS",
+    "away": "VIR",
+    "homeScore": 90,
+    "awayScore": 79
+  },
+  {
+    "id": "api-25",
+    "date": "2025-10-09T21:00:00",
+    "round": 3,
+    "home": "MAD",
+    "away": "ASV",
+    "homeScore": 85,
+    "awayScore": 72
+  },
+  {
+    "id": "api-26",
+    "date": "2025-10-09T20:30:00",
+    "round": 3,
+    "home": "PAR",
+    "away": "IST",
+    "homeScore": 93,
+    "awayScore": 87
+  },
+  {
+    "id": "api-27",
+    "date": "2025-10-10T20:15:00",
+    "round": 3,
+    "home": "OLY",
+    "away": "DUB",
+    "homeScore": 86,
+    "awayScore": 67
+  },
+  {
+    "id": "api-28",
+    "date": "2025-10-10T20:30:00",
+    "round": 3,
+    "home": "BAR",
+    "away": "PAM",
+    "homeScore": 108,
+    "awayScore": 102
+  },
+  {
+    "id": "api-29",
+    "date": "2025-10-10T20:30:00",
+    "round": 3,
+    "home": "MUN",
+    "away": "ZAL",
+    "homeScore": 70,
+    "awayScore": 98
+  },
+  {
+    "id": "api-30",
+    "date": "2025-10-10T19:45:00",
+    "round": 3,
+    "home": "ULK",
+    "away": "RED",
+    "homeScore": 81,
+    "awayScore": 86
+  },
+  {
+    "id": "api-31",
+    "date": "2025-10-14T20:00:00",
+    "round": 4,
+    "home": "RED",
+    "away": "ZAL",
+    "homeScore": 88,
+    "awayScore": 79
+  },
+  {
+    "id": "api-32",
+    "date": "2025-10-14T20:30:00",
+    "round": 4,
+    "home": "MUN",
+    "away": "MIL",
+    "homeScore": 64,
+    "awayScore": 53
+  },
+  {
+    "id": "api-33",
+    "date": "2025-10-14T19:45:00",
+    "round": 4,
+    "home": "ULK",
+    "away": "DUB",
+    "homeScore": 69,
+    "awayScore": 93
+  },
+  {
+    "id": "api-34",
+    "date": "2025-10-14T20:15:00",
+    "round": 4,
+    "home": "OLY",
+    "away": "IST",
+    "homeScore": 78,
+    "awayScore": 82
+  },
+  {
+    "id": "api-35",
+    "date": "2025-10-14T19:00:00",
+    "round": 4,
+    "home": "TEL",
+    "away": "BAR",
+    "homeScore": 71,
+    "awayScore": 92
+  },
+  {
+    "id": "api-36",
+    "date": "2025-10-15T20:15:00",
+    "round": 4,
+    "home": "PAN",
+    "away": "ASV",
+    "homeScore": 91,
+    "awayScore": 85
+  },
+  {
+    "id": "api-37",
+    "date": "2025-10-15T20:45:00",
+    "round": 4,
+    "home": "PRS",
+    "away": "BAS",
+    "homeScore": 105,
+    "awayScore": 87
+  },
+  {
+    "id": "api-38",
+    "date": "2025-10-15T20:45:00",
+    "round": 4,
+    "home": "MAD",
+    "away": "PAR",
+    "homeScore": 93,
+    "awayScore": 86
+  },
+  {
+    "id": "api-39",
+    "date": "2025-10-15T20:30:00",
+    "round": 4,
+    "home": "PAM",
+    "away": "HTA",
+    "homeScore": 93,
+    "awayScore": 100
+  },
+  {
+    "id": "api-40",
+    "date": "2025-10-15T20:30:00",
+    "round": 4,
+    "home": "VIR",
+    "away": "MCO",
+    "homeScore": 77,
+    "awayScore": 73
+  },
+  {
+    "id": "api-41",
+    "date": "2025-10-16T18:00:00",
+    "round": 5,
+    "home": "DUB",
+    "away": "BAR",
+    "homeScore": 83,
+    "awayScore": 78
+  },
+  {
+    "id": "api-42",
+    "date": "2025-10-16T19:45:00",
+    "round": 5,
+    "home": "ULK",
+    "away": "MUN",
+    "homeScore": 88,
+    "awayScore": 73
+  },
+  {
+    "id": "api-43",
+    "date": "2025-10-16T21:00:00",
+    "round": 5,
+    "home": "TEL",
+    "away": "OLY",
+    "homeScore": 94,
+    "awayScore": 95
+  },
+  {
+    "id": "api-44",
+    "date": "2025-10-16T19:00:00",
+    "round": 5,
+    "home": "ZAL",
+    "away": "MIL",
+    "homeScore": 78,
+    "awayScore": 89
+  },
+  {
+    "id": "api-45",
+    "date": "2025-10-17T19:30:00",
+    "round": 5,
+    "home": "IST",
+    "away": "PAN",
+    "homeScore": 81,
+    "awayScore": 95
+  },
+  {
+    "id": "api-46",
+    "date": "2025-10-17T19:30:00",
+    "round": 5,
+    "home": "MCO",
+    "away": "PAM",
+    "homeScore": 90,
+    "awayScore": 84
+  },
+  {
+    "id": "api-47",
+    "date": "2025-10-17T20:45:00",
+    "round": 5,
+    "home": "BAS",
+    "away": "PAR",
+    "homeScore": 79,
+    "awayScore": 91
+  },
+  {
+    "id": "api-48",
+    "date": "2025-10-17T19:00:00",
+    "round": 5,
+    "home": "RED",
+    "away": "MAD",
+    "homeScore": 90,
+    "awayScore": 75
+  },
+  {
+    "id": "api-49",
+    "date": "2025-10-17T20:00:00",
+    "round": 5,
+    "home": "ASV",
+    "away": "VIR",
+    "homeScore": 83,
+    "awayScore": 90
+  },
+  {
+    "id": "api-50",
+    "date": "2025-10-17T20:45:00",
+    "round": 5,
+    "home": "PRS",
+    "away": "HTA",
+    "homeScore": 88,
+    "awayScore": 89
+  },
+  {
+    "id": "api-51",
+    "date": "2025-10-22T20:05:00",
+    "round": 6,
+    "home": "TEL",
+    "away": "MAD",
+    "homeScore": 92,
+    "awayScore": 91
+  },
+  {
+    "id": "api-52",
+    "date": "2025-10-23T21:00:00",
+    "round": 6,
+    "home": "RED",
+    "away": "BAS",
+    "homeScore": 90,
+    "awayScore": 72
+  },
+  {
+    "id": "api-53",
+    "date": "2025-10-23T20:30:00",
+    "round": 6,
+    "home": "MIL",
+    "away": "PAM",
+    "homeScore": 100,
+    "awayScore": 103
+  },
+  {
+    "id": "api-54",
+    "date": "2025-10-23T20:30:00",
+    "round": 6,
+    "home": "BAR",
+    "away": "ZAL",
+    "homeScore": 73,
+    "awayScore": 88
+  },
+  {
+    "id": "api-55",
+    "date": "2025-10-23T20:05:00",
+    "round": 6,
+    "home": "HTA",
+    "away": "MCO",
+    "homeScore": 85,
+    "awayScore": 77
+  },
+  {
+    "id": "api-56",
+    "date": "2025-10-23T19:30:00",
+    "round": 6,
+    "home": "ASV",
+    "away": "DUB",
+    "homeScore": 85,
+    "awayScore": 79
+  },
+  {
+    "id": "api-57",
+    "date": "2025-10-24T19:30:00",
+    "round": 6,
+    "home": "IST",
+    "away": "ULK",
+    "homeScore": 69,
+    "awayScore": 79
+  },
+  {
+    "id": "api-58",
+    "date": "2025-10-24T20:45:00",
+    "round": 6,
+    "home": "MUN",
+    "away": "OLY",
+    "homeScore": 71,
+    "awayScore": 96
+  },
+  {
+    "id": "api-59",
+    "date": "2025-10-24T20:30:00",
+    "round": 6,
+    "home": "PAR",
+    "away": "PRS",
+    "homeScore": 83,
+    "awayScore": 101
+  },
+  {
+    "id": "api-60",
+    "date": "2025-10-24T20:00:00",
+    "round": 6,
+    "home": "VIR",
+    "away": "PAN",
+    "homeScore": 92,
+    "awayScore": 75
+  },
+  {
+    "id": "api-61",
+    "date": "2025-10-28T20:30:00",
+    "round": 7,
+    "home": "BAS",
+    "away": "DUB",
+    "homeScore": 92,
+    "awayScore": 85
+  },
+  {
+    "id": "api-62",
+    "date": "2025-10-28T19:00:00",
+    "round": 7,
+    "home": "RED",
+    "away": "ASV",
+    "homeScore": 79,
+    "awayScore": 65
+  },
+  {
+    "id": "api-63",
+    "date": "2025-10-28T20:30:00",
+    "round": 7,
+    "home": "BAR",
+    "away": "MIL",
+    "homeScore": 74,
+    "awayScore": 72
+  },
+  {
+    "id": "api-64",
+    "date": "2025-10-28T20:00:00",
+    "round": 7,
+    "home": "MUN",
+    "away": "MAD",
+    "homeScore": 90,
+    "awayScore": 84
+  },
+  {
+    "id": "api-65",
+    "date": "2025-10-28T20:15:00",
+    "round": 7,
+    "home": "PAN",
+    "away": "TEL",
+    "homeScore": 99,
+    "awayScore": 85
+  },
+  {
+    "id": "api-66",
+    "date": "2025-10-28T20:45:00",
+    "round": 7,
+    "home": "PRS",
+    "away": "IST",
+    "homeScore": 80,
+    "awayScore": 90
+  },
+  {
+    "id": "api-67",
+    "date": "2025-10-28T21:00:00",
+    "round": 7,
+    "home": "PAM",
+    "away": "ULK",
+    "homeScore": 94,
+    "awayScore": 79
+  },
+  {
+    "id": "api-68",
+    "date": "2025-10-28T19:00:00",
+    "round": 7,
+    "home": "ZAL",
+    "away": "VIR",
+    "homeScore": 86,
+    "awayScore": 65
+  },
+  {
+    "id": "api-69",
+    "date": "2025-10-29T19:00:00",
+    "round": 7,
+    "home": "HTA",
+    "away": "PAR",
+    "homeScore": 97,
+    "awayScore": 84
+  },
+  {
+    "id": "api-70",
+    "date": "2025-10-29T20:15:00",
+    "round": 7,
+    "home": "OLY",
+    "away": "MCO",
+    "homeScore": 87,
+    "awayScore": 92
+  },
+  {
+    "id": "api-71",
+    "date": "2025-10-30T20:30:00",
+    "round": 8,
+    "home": "MIL",
+    "away": "PRS",
+    "homeScore": 86,
+    "awayScore": 77
+  },
+  {
+    "id": "api-72",
+    "date": "2025-10-30T20:30:00",
+    "round": 8,
+    "home": "MUN",
+    "away": "VIR",
+    "homeScore": 86,
+    "awayScore": 70
+  },
+  {
+    "id": "api-73",
+    "date": "2025-10-30T20:05:00",
+    "round": 8,
+    "home": "TEL",
+    "away": "RED",
+    "homeScore": 92,
+    "awayScore": 99
+  },
+  {
+    "id": "api-74",
+    "date": "2025-10-30T21:00:00",
+    "round": 8,
+    "home": "MAD",
+    "away": "ULK",
+    "homeScore": 84,
+    "awayScore": 58
+  },
+  {
+    "id": "api-75",
+    "date": "2025-10-30T20:30:00",
+    "round": 8,
+    "home": "PAM",
+    "away": "DUB",
+    "homeScore": 80,
+    "awayScore": 78
+  },
+  {
+    "id": "api-76",
+    "date": "2025-10-30T19:00:00",
+    "round": 8,
+    "home": "ZAL",
+    "away": "ASV",
+    "homeScore": 96,
+    "awayScore": 59
+  },
+  {
+    "id": "api-77",
+    "date": "2025-10-31T19:00:00",
+    "round": 8,
+    "home": "MCO",
+    "away": "PAN",
+    "homeScore": 92,
+    "awayScore": 84
+  },
+  {
+    "id": "api-78",
+    "date": "2025-10-31T20:30:00",
+    "round": 8,
+    "home": "BAS",
+    "away": "IST",
+    "homeScore": 86,
+    "awayScore": 75
+  },
+  {
+    "id": "api-79",
+    "date": "2025-10-31T20:15:00",
+    "round": 8,
+    "home": "OLY",
+    "away": "HTA",
+    "homeScore": 62,
+    "awayScore": 58
+  },
+  {
+    "id": "api-80",
+    "date": "2025-10-31T20:30:00",
+    "round": 8,
+    "home": "PAR",
+    "away": "BAR",
+    "homeScore": 76,
+    "awayScore": 78
+  },
+  {
+    "id": "api-81",
+    "date": "2025-11-06T21:00:00",
+    "round": 9,
+    "home": "PRS",
+    "away": "MUN",
+    "homeScore": 82,
+    "awayScore": 86
+  },
+  {
+    "id": "api-82",
+    "date": "2025-11-06T20:30:00",
+    "round": 9,
+    "home": "BAS",
+    "away": "VIR",
+    "homeScore": 87,
+    "awayScore": 76
+  },
+  {
+    "id": "api-83",
+    "date": "2025-11-05T20:00:00",
+    "round": 9,
+    "home": "RED",
+    "away": "PAN",
+    "homeScore": 86,
+    "awayScore": 68
+  },
+  {
+    "id": "api-84",
+    "date": "2025-11-06T19:00:00",
+    "round": 9,
+    "home": "DUB",
+    "away": "HTA",
+    "homeScore": 97,
+    "awayScore": 109
+  },
+  {
+    "id": "api-85",
+    "date": "2025-11-06T18:45:00",
+    "round": 9,
+    "home": "ULK",
+    "away": "ASV",
+    "homeScore": 81,
+    "awayScore": 67
+  },
+  {
+    "id": "api-86",
+    "date": "2025-11-06T21:00:00",
+    "round": 9,
+    "home": "TEL",
+    "away": "MCO",
+    "homeScore": 107,
+    "awayScore": 112
+  },
+  {
+    "id": "api-87",
+    "date": "2025-11-07T18:30:00",
+    "round": 9,
+    "home": "IST",
+    "away": "MIL",
+    "homeScore": 93,
+    "awayScore": 97
+  },
+  {
+    "id": "api-88",
+    "date": "2025-11-07T20:30:00",
+    "round": 9,
+    "home": "BAR",
+    "away": "MAD",
+    "homeScore": 92,
+    "awayScore": 101
+  },
+  {
+    "id": "api-89",
+    "date": "2025-11-07T20:15:00",
+    "round": 9,
+    "home": "OLY",
+    "away": "PAR",
+    "homeScore": 80,
+    "awayScore": 71
+  },
+  {
+    "id": "api-90",
+    "date": "2025-11-07T19:00:00",
+    "round": 9,
+    "home": "ZAL",
+    "away": "PAM",
+    "homeScore": 86,
+    "awayScore": 77
+  },
+  {
+    "id": "api-91",
+    "date": "2025-11-11T20:00:00",
+    "round": 10,
+    "home": "ULK",
+    "away": "TEL",
+    "homeScore": 84,
+    "awayScore": 75
+  },
+  {
+    "id": "api-92",
+    "date": "2025-11-11T20:05:00",
+    "round": 10,
+    "home": "HTA",
+    "away": "BAS",
+    "homeScore": 114,
+    "awayScore": 89
+  },
+  {
+    "id": "api-93",
+    "date": "2025-11-11T21:00:00",
+    "round": 10,
+    "home": "PRS",
+    "away": "PAN",
+    "homeScore": 95,
+    "awayScore": 101
+  },
+  {
+    "id": "api-94",
+    "date": "2025-11-11T20:30:00",
+    "round": 10,
+    "home": "PAM",
+    "away": "MAD",
+    "homeScore": 89,
+    "awayScore": 76
+  },
+  {
+    "id": "api-95",
+    "date": "2025-11-11T20:30:00",
+    "round": 10,
+    "home": "VIR",
+    "away": "IST",
+    "homeScore": 99,
+    "awayScore": 89
+  },
+  {
+    "id": "api-96",
+    "date": "2025-11-11T17:00:00",
+    "round": 10,
+    "home": "DUB",
+    "away": "RED",
+    "homeScore": 102,
+    "awayScore": 86
+  },
+  {
+    "id": "api-97",
+    "date": "2025-11-11T20:30:00",
+    "round": 10,
+    "home": "PAR",
+    "away": "MCO",
+    "homeScore": 78,
+    "awayScore": 76
+  },
+  {
+    "id": "api-98",
+    "date": "2025-11-12T20:30:00",
+    "round": 10,
+    "home": "MIL",
+    "away": "ASV",
+    "homeScore": 80,
+    "awayScore": 72
+  },
+  {
+    "id": "api-99",
+    "date": "2025-11-12T20:30:00",
+    "round": 10,
+    "home": "MUN",
+    "away": "BAR",
+    "homeScore": 74,
+    "awayScore": 75
+  },
+  {
+    "id": "api-100",
+    "date": "2025-11-12T20:15:00",
+    "round": 10,
+    "home": "OLY",
+    "away": "ZAL",
+    "homeScore": 95,
+    "awayScore": 78
+  },
+  {
+    "id": "api-101",
+    "date": "2025-11-13T20:00:00",
+    "round": 11,
+    "home": "ULK",
+    "away": "HTA",
+    "homeScore": 74,
+    "awayScore": 68
+  },
+  {
+    "id": "api-102",
+    "date": "2025-11-13T21:00:00",
+    "round": 11,
+    "home": "TEL",
+    "away": "BAS",
+    "homeScore": 89,
+    "awayScore": 83
+  },
+  {
+    "id": "api-103",
+    "date": "2025-11-13T20:45:00",
+    "round": 11,
+    "home": "PRS",
+    "away": "PAM",
+    "homeScore": 90,
+    "awayScore": 86
+  },
+  {
+    "id": "api-104",
+    "date": "2025-11-13T20:45:00",
+    "round": 11,
+    "home": "MAD",
+    "away": "PAN",
+    "homeScore": 77,
+    "awayScore": 87
+  },
+  {
+    "id": "api-105",
+    "date": "2025-11-13T20:00:00",
+    "round": 11,
+    "home": "RED",
+    "away": "MCO",
+    "homeScore": 91,
+    "awayScore": 79
+  },
+  {
+    "id": "api-106",
+    "date": "2025-11-14T18:00:00",
+    "round": 11,
+    "home": "IST",
+    "away": "MUN",
+    "homeScore": 74,
+    "awayScore": 72
+  },
+  {
+    "id": "api-107",
+    "date": "2025-11-14T17:00:00",
+    "round": 11,
+    "home": "DUB",
+    "away": "ZAL",
+    "homeScore": 95,
+    "awayScore": 89
+  },
+  {
+    "id": "api-108",
+    "date": "2025-11-14T20:30:00",
+    "round": 11,
+    "home": "MIL",
+    "away": "OLY",
+    "homeScore": 88,
+    "awayScore": 87
+  },
+  {
+    "id": "api-109",
+    "date": "2025-11-14T20:30:00",
+    "round": 11,
+    "home": "BAR",
+    "away": "VIR",
+    "homeScore": 88,
+    "awayScore": 81
+  },
+  {
+    "id": "api-110",
+    "date": "2025-11-14T20:00:00",
+    "round": 11,
+    "home": "ASV",
+    "away": "PAR",
+    "homeScore": 88,
+    "awayScore": 87
+  },
+  {
+    "id": "api-111",
+    "date": "2025-11-19T20:00:00",
+    "round": 12,
+    "home": "ASV",
+    "away": "MCO",
+    "homeScore": 52,
+    "awayScore": 84
+  },
+  {
+    "id": "api-112",
+    "date": "2025-11-20T18:30:00",
+    "round": 12,
+    "home": "IST",
+    "away": "BAR",
+    "homeScore": 74,
+    "awayScore": 73
+  },
+  {
+    "id": "api-113",
+    "date": "2025-11-20T20:30:00",
+    "round": 12,
+    "home": "MIL",
+    "away": "HTA",
+    "homeScore": 83,
+    "awayScore": 105
+  },
+  {
+    "id": "api-114",
+    "date": "2025-11-20T20:15:00",
+    "round": 12,
+    "home": "PAN",
+    "away": "DUB",
+    "homeScore": 103,
+    "awayScore": 82
+  },
+  {
+    "id": "api-115",
+    "date": "2025-11-20T20:45:00",
+    "round": 12,
+    "home": "MAD",
+    "away": "ZAL",
+    "homeScore": 100,
+    "awayScore": 99
+  },
+  {
+    "id": "api-116",
+    "date": "2025-11-21T20:30:00",
+    "round": 12,
+    "home": "BAS",
+    "away": "MUN",
+    "homeScore": 95,
+    "awayScore": 73
+  },
+  {
+    "id": "api-117",
+    "date": "2025-11-21T20:15:00",
+    "round": 12,
+    "home": "OLY",
+    "away": "PRS",
+    "homeScore": 98,
+    "awayScore": 86
+  },
+  {
+    "id": "api-118",
+    "date": "2025-11-21T20:30:00",
+    "round": 12,
+    "home": "PAR",
+    "away": "ULK",
+    "homeScore": 87,
+    "awayScore": 99
+  },
+  {
+    "id": "api-119",
+    "date": "2025-11-21T21:00:00",
+    "round": 12,
+    "home": "PAM",
+    "away": "RED",
+    "homeScore": 76,
+    "awayScore": 73
+  },
+  {
+    "id": "api-120",
+    "date": "2025-11-21T20:30:00",
+    "round": 12,
+    "home": "VIR",
+    "away": "TEL",
+    "homeScore": 99,
+    "awayScore": 89
+  },
+  {
+    "id": "api-121",
+    "date": "2025-11-25T17:00:00",
+    "round": 13,
+    "home": "DUB",
+    "away": "PRS",
+    "homeScore": 90,
+    "awayScore": 89
+  },
+  {
+    "id": "api-122",
+    "date": "2025-11-25T19:00:00",
+    "round": 13,
+    "home": "HTA",
+    "away": "MAD",
+    "homeScore": 74,
+    "awayScore": 75
+  },
+  {
+    "id": "api-123",
+    "date": "2025-11-25T20:15:00",
+    "round": 13,
+    "home": "PAN",
+    "away": "PAR",
+    "homeScore": 91,
+    "awayScore": 69
+  },
+  {
+    "id": "api-124",
+    "date": "2025-11-25T20:30:00",
+    "round": 13,
+    "home": "PAM",
+    "away": "MUN",
+    "homeScore": 90,
+    "awayScore": 64
+  },
+  {
+    "id": "api-125",
+    "date": "2025-11-25T19:00:00",
+    "round": 13,
+    "home": "ZAL",
+    "away": "BAS",
+    "homeScore": 82,
+    "awayScore": 67
+  },
+  {
+    "id": "api-126",
+    "date": "2025-11-25T18:45:00",
+    "round": 13,
+    "home": "ULK",
+    "away": "VIR",
+    "homeScore": 66,
+    "awayScore": 64
+  },
+  {
+    "id": "api-127",
+    "date": "2025-11-26T19:30:00",
+    "round": 13,
+    "home": "MCO",
+    "away": "IST",
+    "homeScore": 102,
+    "awayScore": 66
+  },
+  {
+    "id": "api-128",
+    "date": "2025-11-26T19:30:00",
+    "round": 13,
+    "home": "RED",
+    "away": "OLY",
+    "homeScore": 91,
+    "awayScore": 80
+  },
+  {
+    "id": "api-129",
+    "date": "2025-11-26T20:30:00",
+    "round": 13,
+    "home": "BAR",
+    "away": "ASV",
+    "homeScore": 88,
+    "awayScore": 78
+  },
+  {
+    "id": "api-130",
+    "date": "2025-11-26T18:00:00",
+    "round": 13,
+    "home": "TEL",
+    "away": "MIL",
+    "homeScore": 88,
+    "awayScore": 102
+  },
+  {
+    "id": "api-131",
+    "date": "2025-12-04T19:30:00",
+    "round": 14,
+    "home": "MCO",
+    "away": "PRS",
+    "homeScore": 125,
+    "awayScore": 104
+  },
+  {
+    "id": "api-132",
+    "date": "2025-12-04T20:45:00",
+    "round": 14,
+    "home": "PAR",
+    "away": "MUN",
+    "homeScore": 92,
+    "awayScore": 85
+  },
+  {
+    "id": "api-133",
+    "date": "2025-12-04T20:05:00",
+    "round": 14,
+    "home": "HTA",
+    "away": "ASV",
+    "homeScore": 87,
+    "awayScore": 80
+  },
+  {
+    "id": "api-135",
+    "date": "2025-12-04T19:00:00",
+    "round": 14,
+    "home": "ZAL",
+    "away": "TEL",
+    "homeScore": 65,
+    "awayScore": 83
+  },
+  {
+    "id": "api-136",
+    "date": "2025-12-04T18:15:00",
+    "round": 14,
+    "home": "IST",
+    "away": "MAD",
+    "homeScore": 75,
+    "awayScore": 81
+  },
+  {
+    "id": "api-137",
+    "date": "2025-12-05T20:00:00",
+    "round": 14,
+    "home": "RED",
+    "away": "BAR",
+    "homeScore": 79,
+    "awayScore": 89
+  },
+  {
+    "id": "api-138",
+    "date": "2025-12-05T20:30:00",
+    "round": 14,
+    "home": "BAS",
+    "away": "MIL",
+    "homeScore": 88,
+    "awayScore": 78
+  },
+  {
+    "id": "api-139",
+    "date": "2025-12-05T20:15:00",
+    "round": 14,
+    "home": "PAN",
+    "away": "PAM",
+    "homeScore": 79,
+    "awayScore": 89
+  },
+  {
+    "id": "api-140",
+    "date": "2025-12-05T20:30:00",
+    "round": 14,
+    "home": "VIR",
+    "away": "DUB",
+    "homeScore": 79,
+    "awayScore": 78
+  },
+  {
+    "id": "api-141",
+    "date": "2025-12-11T20:05:00",
+    "round": 15,
+    "home": "TEL",
+    "away": "ASV",
+    "homeScore": 92,
+    "awayScore": 84
+  },
+  {
+    "id": "api-142",
+    "date": "2025-12-12T17:00:00",
+    "round": 15,
+    "home": "DUB",
+    "away": "MUN",
+    "homeScore": 89,
+    "awayScore": 88
+  },
+  {
+    "id": "api-143",
+    "date": "2025-12-11T20:30:00",
+    "round": 15,
+    "home": "MIL",
+    "away": "PAN",
+    "homeScore": 96,
+    "awayScore": 89
+  },
+  {
+    "id": "api-144",
+    "date": "2025-12-11T20:45:00",
+    "round": 15,
+    "home": "PRS",
+    "away": "ZAL",
+    "homeScore": 105,
+    "awayScore": 108
+  },
+  {
+    "id": "api-145",
+    "date": "2025-12-11T21:00:00",
+    "round": 15,
+    "home": "MAD",
+    "away": "BAS",
+    "homeScore": 94,
+    "awayScore": 87
+  },
+  {
+    "id": "api-146",
+    "date": "2025-12-11T20:30:00",
+    "round": 15,
+    "home": "PAM",
+    "away": "IST",
+    "homeScore": 94,
+    "awayScore": 82
+  },
+  {
+    "id": "api-147",
+    "date": "2025-12-12T19:30:00",
+    "round": 15,
+    "home": "MCO",
+    "away": "ULK",
+    "homeScore": 86,
+    "awayScore": 92
+  },
+  {
+    "id": "api-148",
+    "date": "2025-12-12T20:30:00",
+    "round": 15,
+    "home": "BAR",
+    "away": "OLY",
+    "homeScore": 98,
+    "awayScore": 85
+  },
+  {
+    "id": "api-149",
+    "date": "2025-12-12T20:30:00",
+    "round": 15,
+    "home": "PAR",
+    "away": "RED",
+    "homeScore": 79,
+    "awayScore": 76
+  },
+  {
+    "id": "api-150",
+    "date": "2025-12-12T20:30:00",
+    "round": 15,
+    "home": "VIR",
+    "away": "HTA",
+    "homeScore": 74,
+    "awayScore": 79
+  },
+  {
+    "id": "api-151",
+    "date": "2025-12-16T17:00:00",
+    "round": 16,
+    "home": "DUB",
+    "away": "TEL",
+    "homeScore": 95,
+    "awayScore": 97
+  },
+  {
+    "id": "api-152",
+    "date": "2025-12-16T20:30:00",
+    "round": 16,
+    "home": "MIL",
+    "away": "MAD",
+    "homeScore": 89,
+    "awayScore": 82
+  },
+  {
+    "id": "api-153",
+    "date": "2025-12-16T18:45:00",
+    "round": 16,
+    "home": "ULK",
+    "away": "PAN",
+    "homeScore": 77,
+    "awayScore": 81
+  },
+  {
+    "id": "api-154",
+    "date": "2025-12-16T20:05:00",
+    "round": 16,
+    "home": "HTA",
+    "away": "RED",
+    "homeScore": 84,
+    "awayScore": 78
+  },
+  {
+    "id": "api-155",
+    "date": "2025-12-16T20:15:00",
+    "round": 16,
+    "home": "OLY",
+    "away": "PAM",
+    "homeScore": 92,
+    "awayScore": 99
+  },
+  {
+    "id": "api-156",
+    "date": "2025-12-16T21:00:00",
+    "round": 16,
+    "home": "PRS",
+    "away": "BAR",
+    "homeScore": 69,
+    "awayScore": 85
+  },
+  {
+    "id": "api-157",
+    "date": "2025-12-17T20:30:00",
+    "round": 16,
+    "home": "BAS",
+    "away": "MCO",
+    "homeScore": 85,
+    "awayScore": 73
+  },
+  {
+    "id": "api-158",
+    "date": "2025-12-17T20:00:00",
+    "round": 16,
+    "home": "ASV",
+    "away": "MUN",
+    "homeScore": 76,
+    "awayScore": 74
+  },
+  {
+    "id": "api-159",
+    "date": "2025-12-17T20:30:00",
+    "round": 16,
+    "home": "PAR",
+    "away": "VIR",
+    "homeScore": 68,
+    "awayScore": 86
+  },
+  {
+    "id": "api-160",
+    "date": "2025-12-17T19:00:00",
+    "round": 16,
+    "home": "ZAL",
+    "away": "IST",
+    "homeScore": 64,
+    "awayScore": 87
+  },
+  {
+    "id": "api-161",
+    "date": "2025-12-18T20:30:00",
+    "round": 17,
+    "home": "MIL",
+    "away": "ULK",
+    "homeScore": 72,
+    "awayScore": 87
+  },
+  {
+    "id": "api-162",
+    "date": "2025-12-18T20:05:00",
+    "round": 17,
+    "home": "TEL",
+    "away": "PAM",
+    "homeScore": 85,
+    "awayScore": 82
+  },
+  {
+    "id": "api-163",
+    "date": "2025-12-18T20:15:00",
+    "round": 17,
+    "home": "PAN",
+    "away": "HTA",
+    "homeScore": 93,
+    "awayScore": 82
+  },
+  {
+    "id": "api-164",
+    "date": "2025-12-18T20:45:00",
+    "round": 17,
+    "home": "MAD",
+    "away": "PRS",
+    "homeScore": 95,
+    "awayScore": 90
+  },
+  {
+    "id": "api-165",
+    "date": "2025-12-19T18:30:00",
+    "round": 17,
+    "home": "IST",
+    "away": "DUB",
+    "homeScore": 76,
+    "awayScore": 80
+  },
+  {
+    "id": "api-166",
+    "date": "2025-12-19T19:30:00",
+    "round": 17,
+    "home": "MCO",
+    "away": "MUN",
+    "homeScore": 103,
+    "awayScore": 77
+  },
+  {
+    "id": "api-167",
+    "date": "2025-12-19T20:45:00",
+    "round": 17,
+    "home": "RED",
+    "away": "VIR",
+    "homeScore": 90,
+    "awayScore": 89
+  },
+  {
+    "id": "api-168",
+    "date": "2025-12-19T20:30:00",
+    "round": 17,
+    "home": "BAR",
+    "away": "BAS",
+    "homeScore": 134,
+    "awayScore": 124
+  },
+  {
+    "id": "api-169",
+    "date": "2025-12-19T20:15:00",
+    "round": 17,
+    "home": "OLY",
+    "away": "ASV",
+    "homeScore": 107,
+    "awayScore": 84
+  },
+  {
+    "id": "api-170",
+    "date": "2025-12-19T19:00:00",
+    "round": 17,
+    "home": "ZAL",
+    "away": "PAR",
+    "homeScore": 109,
+    "awayScore": 68
+  },
+  {
+    "id": "api-171",
+    "date": "2025-12-23T19:30:00",
+    "round": 18,
+    "home": "MUN",
+    "away": "HTA",
+    "homeScore": 72,
+    "awayScore": 82
+  },
+  {
+    "id": "api-172",
+    "date": "2025-12-23T18:45:00",
+    "round": 18,
+    "home": "ULK",
+    "away": "BAR",
+    "homeScore": 72,
+    "awayScore": 71
+  },
+  {
+    "id": "api-173",
+    "date": "2025-12-23T20:45:00",
+    "round": 18,
+    "home": "ASV",
+    "away": "IST",
+    "homeScore": 103,
+    "awayScore": 99
+  },
+  {
+    "id": "api-174",
+    "date": "2025-12-23T20:45:00",
+    "round": 18,
+    "home": "PRS",
+    "away": "RED",
+    "homeScore": 102,
+    "awayScore": 92
+  },
+  {
+    "id": "api-175",
+    "date": "2025-12-23T20:00:00",
+    "round": 18,
+    "home": "PAM",
+    "away": "BAS",
+    "homeScore": 91,
+    "awayScore": 81
+  },
+  {
+    "id": "api-176",
+    "date": "2025-12-23T19:00:00",
+    "round": 18,
+    "home": "ZAL",
+    "away": "PAN",
+    "homeScore": 85,
+    "awayScore": 92
+  },
+  {
+    "id": "api-177",
+    "date": "2025-12-23T17:00:00",
+    "round": 18,
+    "home": "DUB",
+    "away": "MIL",
+    "homeScore": 99,
+    "awayScore": 92
+  },
+  {
+    "id": "api-178",
+    "date": "2025-12-26T19:30:00",
+    "round": 18,
+    "home": "MCO",
+    "away": "MAD",
+    "homeScore": 100,
+    "awayScore": 95
+  },
+  {
+    "id": "api-179",
+    "date": "2025-12-26T18:00:00",
+    "round": 18,
+    "home": "PAR",
+    "away": "TEL",
+    "homeScore": 87,
+    "awayScore": 112
+  },
+  {
+    "id": "api-180",
+    "date": "2025-12-26T20:30:00",
+    "round": 18,
+    "home": "VIR",
+    "away": "OLY",
+    "homeScore": 94,
+    "awayScore": 97
+  },
+  {
+    "id": "api-181",
+    "date": "2025-12-30T20:30:00",
+    "round": 19,
+    "home": "BAR",
+    "away": "MCO",
+    "homeScore": 74,
+    "awayScore": 90
+  },
+  {
+    "id": "api-182",
+    "date": "2025-12-30T20:05:00",
+    "round": 19,
+    "home": "HTA",
+    "away": "ZAL",
+    "homeScore": 80,
+    "awayScore": 93
+  },
+  {
+    "id": "api-183",
+    "date": "2025-12-30T20:15:00",
+    "round": 19,
+    "home": "ASV",
+    "away": "PRS",
+    "homeScore": 94,
+    "awayScore": 89
+  },
+  {
+    "id": "api-184",
+    "date": "2025-12-30T20:30:00",
+    "round": 19,
+    "home": "PAM",
+    "away": "PAR",
+    "homeScore": 86,
+    "awayScore": 73
+  },
+  {
+    "id": "api-185",
+    "date": "2026-01-02T18:00:00",
+    "round": 19,
+    "home": "IST",
+    "away": "RED",
+    "homeScore": 65,
+    "awayScore": 87
+  },
+  {
+    "id": "api-186",
+    "date": "2026-01-02T20:00:00",
+    "round": 19,
+    "home": "BAS",
+    "away": "ULK",
+    "homeScore": 93,
+    "awayScore": 108
+  },
+  {
+    "id": "api-187",
+    "date": "2026-01-02T21:00:00",
+    "round": 19,
+    "home": "MUN",
+    "away": "TEL",
+    "homeScore": 95,
+    "awayScore": 71
+  },
+  {
+    "id": "api-188",
+    "date": "2026-01-02T20:15:00",
+    "round": 19,
+    "home": "PAN",
+    "away": "OLY",
+    "homeScore": 82,
+    "awayScore": 87
+  },
+  {
+    "id": "api-189",
+    "date": "2026-01-02T20:45:00",
+    "round": 19,
+    "home": "MAD",
+    "away": "DUB",
+    "homeScore": 107,
+    "awayScore": 93
+  },
+  {
+    "id": "api-190",
+    "date": "2026-01-02T20:30:00",
+    "round": 19,
+    "home": "VIR",
+    "away": "MIL",
+    "homeScore": 97,
+    "awayScore": 85
+  },
+  {
+    "id": "api-191",
+    "date": "2026-01-06T19:30:00",
+    "round": 20,
+    "home": "MCO",
+    "away": "PAR",
+    "homeScore": 101,
+    "awayScore": 84
+  },
+  {
+    "id": "api-192",
+    "date": "2026-01-06T20:00:00",
+    "round": 20,
+    "home": "RED",
+    "away": "PAM",
+    "homeScore": 89,
+    "awayScore": 106
+  },
+  {
+    "id": "api-193",
+    "date": "2026-01-06T20:30:00",
+    "round": 20,
+    "home": "BAR",
+    "away": "TEL",
+    "homeScore": 93,
+    "awayScore": 83
+  },
+  {
+    "id": "api-194",
+    "date": "2026-01-06T18:45:00",
+    "round": 20,
+    "home": "ULK",
+    "away": "OLY",
+    "homeScore": 88,
+    "awayScore": 80
+  },
+  {
+    "id": "api-195",
+    "date": "2026-01-06T20:05:00",
+    "round": 20,
+    "home": "HTA",
+    "away": "DUB",
+    "homeScore": 85,
+    "awayScore": 60
+  },
+  {
+    "id": "api-196",
+    "date": "2026-01-06T20:00:00",
+    "round": 20,
+    "home": "ASV",
+    "away": "MAD",
+    "homeScore": 69,
+    "awayScore": 80
+  },
+  {
+    "id": "api-197",
+    "date": "2026-01-06T20:15:00",
+    "round": 20,
+    "home": "PAN",
+    "away": "MIL",
+    "homeScore": 74,
+    "awayScore": 87
+  },
+  {
+    "id": "api-198",
+    "date": "2026-01-06T20:30:00",
+    "round": 20,
+    "home": "VIR",
+    "away": "ZAL",
+    "homeScore": 83,
+    "awayScore": 79
+  },
+  {
+    "id": "api-199",
+    "date": "2026-01-07T18:30:00",
+    "round": 20,
+    "home": "IST",
+    "away": "PRS",
+    "homeScore": 79,
+    "awayScore": 84
+  },
+  {
+    "id": "api-200",
+    "date": "2026-01-07T20:30:00",
+    "round": 20,
+    "home": "MUN",
+    "away": "BAS",
+    "homeScore": 96,
+    "awayScore": 89
+  },
+  {
+    "id": "api-201",
+    "date": "2026-01-08T17:00:00",
+    "round": 21,
+    "home": "DUB",
+    "away": "ULK",
+    "homeScore": 92,
+    "awayScore": 81
+  },
+  {
+    "id": "api-202",
+    "date": "2026-01-08T20:45:00",
+    "round": 21,
+    "home": "MAD",
+    "away": "TEL",
+    "homeScore": 98,
+    "awayScore": 86
+  },
+  {
+    "id": "api-203",
+    "date": "2026-01-08T20:30:00",
+    "round": 21,
+    "home": "PAM",
+    "away": "MCO",
+    "homeScore": 92,
+    "awayScore": 101
+  },
+  {
+    "id": "api-204",
+    "date": "2026-01-08T20:15:00",
+    "round": 21,
+    "home": "PAN",
+    "away": "VIR",
+    "homeScore": 84,
+    "awayScore": 71
+  },
+  {
+    "id": "api-206",
+    "date": "2026-01-09T20:30:00",
+    "round": 21,
+    "home": "BAS",
+    "away": "ASV",
+    "homeScore": 78,
+    "awayScore": 73
+  },
+  {
+    "id": "api-207",
+    "date": "2026-01-09T20:30:00",
+    "round": 21,
+    "home": "MIL",
+    "away": "IST",
+    "homeScore": 87,
+    "awayScore": 74
+  },
+  {
+    "id": "api-208",
+    "date": "2026-01-09T20:30:00",
+    "round": 21,
+    "home": "BAR",
+    "away": "PAR",
+    "homeScore": 88,
+    "awayScore": 70
+  },
+  {
+    "id": "api-209",
+    "date": "2026-01-09T20:15:00",
+    "round": 21,
+    "home": "OLY",
+    "away": "MUN",
+    "homeScore": 95,
+    "awayScore": 80
+  },
+  {
+    "id": "api-210",
+    "date": "2026-01-09T19:00:00",
+    "round": 21,
+    "home": "ZAL",
+    "away": "RED",
+    "homeScore": 99,
+    "awayScore": 67
+  }
+];
+
+// Team code mapping for reference
+export const TEAM_NAMES = {
+  "HTA": "Hapoel IBI Tel Aviv",
+  "MCO": "AS Monaco",
+  "PAM": "Valencia Basket",
+  "BAR": "FC Barcelona",
+  "ULK": "Fenerbahce Beko Istanbul",
+  "MAD": "Real Madrid",
+  "PAN": "Panathinaikos AKTOR Athens",
+  "OLY": "Olympiacos Piraeus",
+  "ZAL": "Zalgiris Kaunas",
+  "RED": "Crvena Zvezda Meridianbet Belgrade",
+  "MIL": "EA7 Emporio Armani Milan",
+  "VIR": "Virtus Bologna",
+  "DUB": "Dubai Basketball",
+  "TEL": "Maccabi Rapyd Tel Aviv",
+  "PRS": "Paris Basketball",
+  "BAS": "Kosner Baskonia Vitoria-Gasteiz",
+  "MUN": "FC Bayern Munich",
+  "IST": "Anadolu Efes Istanbul",
+  "ASV": "LDLC ASVEL Villeurbanne",
+  "PAR": "Partizan Mozzart Bet Belgrade",
+};
