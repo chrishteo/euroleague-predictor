@@ -305,6 +305,9 @@ export default function EuroLeaguePredictor() {
         const favData = await window.storage.get('euroleague-favorite');
         const whatIfData = await window.storage.get('euroleague-whatif');
         const lastUpdateData = await window.storage.get('euroleague-lastupdate');
+        const predictionsData = await window.storage.get('euroleague-predictions');
+        const playoffsData = await window.storage.get('euroleague-playoffs');
+        const gamePredictionsData = await window.storage.get('euroleague-gamepredictions');
 
         if (teamsData?.value) setTeams(JSON.parse(teamsData.value));
         if (matchesData?.value) setMatches(JSON.parse(matchesData.value));
@@ -312,6 +315,9 @@ export default function EuroLeaguePredictor() {
         if (favData?.value) setFavoriteTeam(favData.value);
         if (whatIfData?.value) setWhatIfResults(JSON.parse(whatIfData.value));
         if (lastUpdateData?.value) setLastUpdate(lastUpdateData.value);
+        if (predictionsData?.value) setPredictions(JSON.parse(predictionsData.value));
+        if (playoffsData?.value) setPlayoffResults(JSON.parse(playoffsData.value));
+        if (gamePredictionsData?.value) setGamePredictions(JSON.parse(gamePredictionsData.value));
       } catch (e) {
         console.log('No saved data found, using defaults');
       }
@@ -501,11 +507,15 @@ export default function EuroLeaguePredictor() {
       setHeadToHead({});
       setWhatIfResults({});
       setPlayoffResults(null);
+      setGamePredictions([]);
       try {
         await window.storage.delete('euroleague-teams');
         await window.storage.delete('euroleague-matches');
         await window.storage.delete('euroleague-h2h');
         await window.storage.delete('euroleague-whatif');
+        await window.storage.delete('euroleague-predictions');
+        await window.storage.delete('euroleague-playoffs');
+        await window.storage.delete('euroleague-gamepredictions');
       } catch (e) {}
     }
   };
@@ -902,12 +912,22 @@ export default function EuroLeaguePredictor() {
       setPredictions(results);
 
       // Set playoff results and game predictions
-      setPlayoffResults({
+      const playoffData = {
         playoffCounts,
         finalFourCounts,
         championCounts
-      });
+      };
+      setPlayoffResults(playoffData);
       setGamePredictions(gamePredictions);
+
+      // Save simulation results to localStorage
+      try {
+        await window.storage.set('euroleague-predictions', JSON.stringify(results));
+        await window.storage.set('euroleague-playoffs', JSON.stringify(playoffData));
+        await window.storage.set('euroleague-gamepredictions', JSON.stringify(gamePredictions));
+      } catch (e) {
+        console.error('Failed to save simulation results:', e);
+      }
 
       setIsSimulating(false);
     }, 100);
