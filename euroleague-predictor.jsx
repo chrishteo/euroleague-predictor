@@ -333,6 +333,12 @@ export default function EuroLeaguePredictor() {
   const [compareTeams, setCompareTeams] = useState({ team1: '', team2: '' });
   const [showComparison, setShowComparison] = useState(false);
 
+  // Race animation state
+  const [raceRound, setRaceRound] = useState(1);
+  const [isRacePlaying, setIsRacePlaying] = useState(false);
+  const [raceSpeed, setRaceSpeed] = useState(500); // ms per round
+  const raceIntervalRef = useRef(null);
+
   // Load data from storage on mount
   useEffect(() => {
     const loadData = async () => {
@@ -1202,6 +1208,113 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
     return schedule.filter(g => g.home === favoriteTeam || g.away === favoriteTeam);
   }, [favoriteTeam, schedule]);
 
+  // Team colors for the race
+  const getTeamColor = useCallback((code) => {
+    const colors = {
+      'PAN': '#006633', 'OLY': '#cc0000', 'PAM': '#0055a4', 'MAD': '#ffffff',
+      'BAR': '#a50044', 'MIL': '#006633', 'MCO': '#cc0000', 'HTA': '#fdb913',
+      'ULK': '#e5b300', 'ZAL': '#006633', 'RED': '#c62828', 'VIR': '#1b1b3a',
+      'DUB': '#000000', 'TEL': '#f9c904', 'PRS': '#bb1230', 'BAS': '#3478ba',
+      'MUN': '#c00d0d', 'IST': '#1e3a5f', 'ASV': '#164194', 'PAR': '#1b1464'
+    };
+    return colors[code] || '#ff6b35';
+  }, []);
+
+  // Race data - calculate cumulative wins per team per round
+  const raceData = useMemo(() => {
+    if (!gamePredictions || gamePredictions.length === 0) return null;
+
+    // Get all rounds from game predictions
+    const rounds = [...new Set(gamePredictions.map(g => g.round))].sort((a, b) => a - b);
+    const minRound = Math.min(...rounds);
+    const maxRound = Math.max(...rounds);
+
+    // Initialize team stats with current standings (before predicted games)
+    const teamStats = {};
+    teams.forEach(team => {
+      teamStats[team.code] = {
+        code: team.code,
+        name: team.name,
+        wins: team.wins,
+        losses: team.losses,
+        color: getTeamColor(team.code)
+      };
+    });
+
+    // Calculate stats for each round
+    const roundData = [];
+
+    // Add starting position (current standings)
+    roundData.push({
+      round: minRound - 1,
+      label: 'Current',
+      teams: Object.values(teamStats).map(t => ({ ...t }))
+        .sort((a, b) => b.wins - a.wins || a.losses - b.losses)
+    });
+
+    // Process each round
+    for (let round = minRound; round <= maxRound; round++) {
+      const roundGames = gamePredictions.filter(g => g.round === round);
+
+      roundGames.forEach(game => {
+        if (game.predictedWinner === game.home) {
+          teamStats[game.home].wins++;
+          teamStats[game.away].losses++;
+        } else {
+          teamStats[game.away].wins++;
+          teamStats[game.home].losses++;
+        }
+      });
+
+      roundData.push({
+        round,
+        label: `Round ${round}`,
+        teams: Object.values(teamStats).map(t => ({ ...t }))
+          .sort((a, b) => b.wins - a.wins || a.losses - b.losses)
+      });
+    }
+
+    return roundData;
+  }, [gamePredictions, teams, getTeamColor]);
+
+  // Race animation effect
+  useEffect(() => {
+    if (isRacePlaying && raceData) {
+      raceIntervalRef.current = setInterval(() => {
+        setRaceRound(prev => {
+          if (prev >= raceData.length - 1) {
+            setIsRacePlaying(false);
+            return prev;
+          }
+          return prev + 1;
+        });
+      }, raceSpeed);
+    }
+
+    return () => {
+      if (raceIntervalRef.current) {
+        clearInterval(raceIntervalRef.current);
+      }
+    };
+  }, [isRacePlaying, raceSpeed, raceData]);
+
+  // Race control functions
+  const startRace = () => {
+    if (raceRound >= (raceData?.length || 1) - 1) {
+      setRaceRound(0);
+    }
+    setIsRacePlaying(true);
+  };
+
+  const pauseRace = () => {
+    setIsRacePlaying(false);
+  };
+
+  const resetRace = () => {
+    setIsRacePlaying(false);
+    setRaceRound(0);
+  };
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -1822,6 +1935,9 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
         </button>
         <button className={`tab ${activeTab === 'playoffs' ? 'active' : ''}`} onClick={() => setActiveTab('playoffs')}>
           Playoffs
+        </button>
+        <button className={`tab ${activeTab === 'race' ? 'active' : ''}`} onClick={() => setActiveTab('race')}>
+          Race
         </button>
         {favoriteTeam && (
           <button className={`tab ${activeTab === 'favorite' ? 'active' : ''}`} onClick={() => setActiveTab('favorite')}>
@@ -3290,6 +3406,223 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                     </div>
                   );
                 })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Race Tab */}
+        {activeTab === 'race' && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 600 }}>Season Race</h2>
+                <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#666' }}>
+                  Watch teams climb the standings through the season
+                </p>
+              </div>
+              {raceData && (
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <select
+                    value={raceSpeed}
+                    onChange={(e) => setRaceSpeed(parseInt(e.target.value))}
+                    style={{
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      color: '#fff',
+                      fontSize: '13px'
+                    }}
+                  >
+                    <option value={1000}>Slow</option>
+                    <option value={500}>Normal</option>
+                    <option value={250}>Fast</option>
+                    <option value={100}>Very Fast</option>
+                  </select>
+                  <button className="btn btn-secondary btn-small" onClick={resetRace}>
+                    Reset
+                  </button>
+                  {isRacePlaying ? (
+                    <button className="btn btn-primary" onClick={pauseRace}>
+                      Pause
+                    </button>
+                  ) : (
+                    <button className="btn btn-primary" onClick={startRace}>
+                      {raceRound > 0 ? 'Resume' : 'Start Race'}
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {!raceData ? (
+              <div className="glass" style={{
+                padding: '80px 40px',
+                borderRadius: '16px',
+                textAlign: 'center'
+              }}>
+                <div style={{ fontSize: '48px', marginBottom: '16px' }}>🏁</div>
+                <h3 style={{ margin: '0 0 8px', fontWeight: 600 }}>Run Simulation First</h3>
+                <p style={{ margin: 0, color: '#666', maxWidth: '400px', marginInline: 'auto' }}>
+                  Go to the Predictions tab and run a simulation to see the season race animation.
+                </p>
+              </div>
+            ) : (
+              <div className="glass" style={{ borderRadius: '16px', padding: '24px', overflow: 'hidden' }}>
+                {/* Current round indicator */}
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '24px',
+                  paddingBottom: '16px',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+                }}>
+                  <div style={{
+                    fontSize: '28px',
+                    fontWeight: 700,
+                    fontFamily: "'Space Mono', monospace",
+                    color: '#ff6b35'
+                  }}>
+                    {raceData[raceRound]?.label || 'Current'}
+                  </div>
+                  <div style={{ fontSize: '14px', color: '#666' }}>
+                    {raceRound + 1} / {raceData.length}
+                  </div>
+                </div>
+
+                {/* Progress bar */}
+                <div style={{
+                  width: '100%',
+                  height: '4px',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  borderRadius: '2px',
+                  marginBottom: '24px',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{
+                    width: `${((raceRound + 1) / raceData.length) * 100}%`,
+                    height: '100%',
+                    background: 'linear-gradient(90deg, #ff6b35, #f59e0b)',
+                    borderRadius: '2px',
+                    transition: 'width 0.3s ease'
+                  }} />
+                </div>
+
+                {/* Bar chart */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  {raceData[raceRound]?.teams.map((team, idx) => {
+                    const maxWins = Math.max(...raceData[raceRound].teams.map(t => t.wins));
+                    const barWidth = maxWins > 0 ? (team.wins / maxWins) * 100 : 0;
+                    const isTop6 = idx < 6;
+                    const isPlayIn = idx >= 6 && idx < 10;
+
+                    return (
+                      <div
+                        key={team.code}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '12px',
+                          padding: '6px 0',
+                          transition: 'all 0.3s ease'
+                        }}
+                      >
+                        {/* Position */}
+                        <div style={{
+                          width: '28px',
+                          fontFamily: "'Space Mono', monospace",
+                          fontSize: '13px',
+                          fontWeight: 600,
+                          color: isTop6 ? '#22c55e' : isPlayIn ? '#eab308' : '#666',
+                          textAlign: 'right'
+                        }}>
+                          {idx + 1}
+                        </div>
+
+                        {/* Team code */}
+                        <div style={{
+                          width: '50px',
+                          fontSize: '12px',
+                          fontWeight: 600,
+                          fontFamily: "'Space Mono', monospace",
+                          color: team.code === favoriteTeam ? '#ff6b35' : '#e8e8e8'
+                        }}>
+                          {team.code}
+                        </div>
+
+                        {/* Bar */}
+                        <div style={{ flex: 1, position: 'relative', height: '28px' }}>
+                          <div style={{
+                            position: 'absolute',
+                            left: 0,
+                            top: 0,
+                            height: '100%',
+                            width: `${Math.max(barWidth, 2)}%`,
+                            background: isTop6
+                              ? 'linear-gradient(90deg, #22c55e, #16a34a)'
+                              : isPlayIn
+                                ? 'linear-gradient(90deg, #eab308, #ca8a04)'
+                                : 'linear-gradient(90deg, #6b7280, #4b5563)',
+                            borderRadius: '4px',
+                            transition: 'width 0.3s ease',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'flex-end',
+                            paddingRight: '8px',
+                            minWidth: '60px'
+                          }}>
+                            <span style={{
+                              fontSize: '12px',
+                              fontWeight: 700,
+                              fontFamily: "'Space Mono', monospace",
+                              color: '#fff',
+                              textShadow: '0 1px 2px rgba(0,0,0,0.5)'
+                            }}>
+                              {team.wins}W
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Record */}
+                        <div style={{
+                          width: '60px',
+                          fontSize: '12px',
+                          fontFamily: "'Space Mono', monospace",
+                          color: '#888',
+                          textAlign: 'right'
+                        }}>
+                          {team.wins}-{team.losses}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Legend */}
+                <div style={{
+                  display: 'flex',
+                  gap: '24px',
+                  marginTop: '24px',
+                  paddingTop: '16px',
+                  borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                  fontSize: '12px',
+                  color: '#666'
+                }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ width: '12px', height: '12px', borderRadius: '2px', background: '#22c55e' }} />
+                    Direct Playoffs (1-6)
+                  </span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ width: '12px', height: '12px', borderRadius: '2px', background: '#eab308' }} />
+                    Play-In (7-10)
+                  </span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ width: '12px', height: '12px', borderRadius: '2px', background: '#6b7280' }} />
+                    Eliminated (11-20)
+                  </span>
+                </div>
               </div>
             )}
           </div>
