@@ -1065,6 +1065,103 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
     URL.revokeObjectURL(url);
   };
 
+  // Get comparison data between two teams
+  const getComparisonData = (team1Code, team2Code) => {
+    if (!team1Code || !team2Code) return null;
+
+    const team1 = teams.find(t => t.code === team1Code);
+    const team2 = teams.find(t => t.code === team2Code);
+    const pred1 = predictions?.find(t => t.code === team1Code);
+    const pred2 = predictions?.find(t => t.code === team2Code);
+
+    if (!team1 || !team2) return null;
+
+    // Find remaining H2H games
+    const h2hGames = schedule.filter(g =>
+      (g.home === team1Code && g.away === team2Code) ||
+      (g.home === team2Code && g.away === team1Code)
+    );
+
+    // Calculate win probability for H2H games
+    const rating1 = calculateRating(team1);
+    const rating2 = calculateRating(team2);
+
+    const h2hWithProbs = h2hGames.map(game => {
+      const homeRating = game.home === team1Code ? rating1 : rating2;
+      const awayRating = game.home === team1Code ? rating2 : rating1;
+      const homeProb = expectedWinProb(homeRating, awayRating, true) * 100;
+      return {
+        ...game,
+        homeProb,
+        awayProb: 100 - homeProb
+      };
+    });
+
+    return {
+      team1: { ...team1, rating: rating1, pred: pred1 },
+      team2: { ...team2, rating: rating2, pred: pred2 },
+      h2hGames: h2hWithProbs,
+      remainingGames1: schedule.filter(g => g.home === team1Code || g.away === team1Code).length,
+      remainingGames2: schedule.filter(g => g.home === team2Code || g.away === team2Code).length
+    };
+  };
+
+  // Run scenario simulation (team wins all remaining games)
+  const runScenario = (teamCode, winsAll = true) => {
+    // Set what-if for all remaining games of this team
+    const newWhatIf = { ...whatIfResults };
+    schedule.forEach((game, idx) => {
+      if (game.home === teamCode) {
+        newWhatIf[idx] = winsAll ? 'home' : undefined;
+      } else if (game.away === teamCode) {
+        newWhatIf[idx] = winsAll ? 'away' : undefined;
+      }
+    });
+    setWhatIfResults(newWhatIf);
+    window.storage.set('euroleague-whatif', JSON.stringify(newWhatIf));
+  };
+
+  // Calculate projected standings after each round
+  const getRoundProjections = useMemo(() => {
+    if (!predictions || !gamePredictions.length) return [];
+
+    const rounds = [...new Set(schedule.map(g => g.round))].sort((a, b) => a - b);
+    const projections = [];
+
+    // Start with current standings
+    let currentStandings = {};
+    teams.forEach(t => {
+      currentStandings[t.code] = { wins: t.wins, losses: t.losses };
+    });
+
+    rounds.forEach(round => {
+      const roundGames = gamePredictions.filter(g => g.round === round);
+
+      // Apply predicted results
+      roundGames.forEach(game => {
+        if (game.predictedWinner === game.home) {
+          currentStandings[game.home].wins++;
+          currentStandings[game.away].losses++;
+        } else {
+          currentStandings[game.away].wins++;
+          currentStandings[game.home].losses++;
+        }
+      });
+
+      // Sort and get top 10
+      const sorted = Object.entries(currentStandings)
+        .map(([code, stats]) => ({ code, ...stats, winPct: stats.wins / (stats.wins + stats.losses) }))
+        .sort((a, b) => b.winPct - a.winPct);
+
+      projections.push({
+        round,
+        standings: sorted.slice(0, 10)
+      });
+    });
+
+    return projections;
+  }, [predictions, gamePredictions, schedule, teams]);
+
   // Set favorite team
   const setFavorite = async (code) => {
     setFavoriteTeam(code);
@@ -1483,6 +1580,9 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
           </button>
           <button className="btn btn-secondary" onClick={resetData} style={{ fontSize: '13px' }}>
             Reset
+          </button>
+          <button className="btn btn-secondary" onClick={() => setShowComparison(true)} style={{ fontSize: '13px' }}>
+            ⚔️ Compare
           </button>
           <button className="help-btn" onClick={() => setShowHelp(true)} title="Help & Info">
             ?
@@ -2252,6 +2352,126 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                     </div>
                   </div>
                 )}
+
+                {/* Scenario Mode */}
+                <div className="glass" style={{ borderRadius: '16px', padding: '24px', marginTop: '32px' }}>
+                  <h3 style={{ margin: '0 0 16px', fontSize: '16px', fontWeight: 600 }}>
+                    🔮 Scenario Mode
+                    <span style={{ fontSize: '13px', color: '#666', fontWeight: 400, marginLeft: '12px' }}>
+                      What if a team wins all remaining games?
+                    </span>
+                  </h3>
+                  <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+                    <select
+                      id="scenario-team"
+                      style={{ minWidth: '200px' }}
+                      defaultValue=""
+                    >
+                      <option value="">Select a team...</option>
+                      {teams.sort((a, b) => a.name.localeCompare(b.name)).map(t => (
+                        <option key={t.code} value={t.code}>{t.name}</option>
+                      ))}
+                    </select>
+                    <button
+                      className="btn btn-primary btn-small"
+                      onClick={() => {
+                        const select = document.getElementById('scenario-team');
+                        if (select.value) {
+                          runScenario(select.value, true);
+                          alert(`Set ${teams.find(t => t.code === select.value)?.name} to win all remaining games. Click "Run Simulation" to see the impact!`);
+                        }
+                      }}
+                    >
+                      Set All Wins
+                    </button>
+                    <button
+                      className="btn btn-secondary btn-small"
+                      onClick={() => {
+                        setWhatIfResults({});
+                        window.storage.set('euroleague-whatif', '{}');
+                        alert('Cleared all what-if scenarios.');
+                      }}
+                    >
+                      Clear Scenarios
+                    </button>
+                  </div>
+                  <p style={{ margin: '12px 0 0', fontSize: '12px', color: '#888' }}>
+                    This sets all remaining games for the selected team as wins. Run the simulation again to see how the predictions change.
+                  </p>
+                </div>
+
+                {/* Round-by-Round Projections */}
+                {getRoundProjections.length > 0 && (
+                  <div className="glass" style={{ borderRadius: '16px', padding: '24px', marginTop: '32px' }}>
+                    <h3 style={{ margin: '0 0 16px', fontSize: '16px', fontWeight: 600 }}>
+                      📅 Round-by-Round Standings Projection
+                      <span style={{ fontSize: '13px', color: '#666', fontWeight: 400, marginLeft: '12px' }}>
+                        Top 10 after each round
+                      </span>
+                    </h3>
+                    <div style={{ overflowX: 'auto' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
+                        <thead>
+                          <tr style={{ background: 'rgba(255, 255, 255, 0.03)' }}>
+                            <th style={{ padding: '12px', textAlign: 'left', fontSize: '11px', color: '#888', fontWeight: 500, position: 'sticky', left: 0, background: '#0a0a0f' }}>POS</th>
+                            {getRoundProjections.filter((_, i) => i % 2 === 0).slice(0, 8).map(p => (
+                              <th key={p.round} style={{ padding: '12px', textAlign: 'center', fontSize: '11px', color: '#888', fontWeight: 500 }}>
+                                R{p.round}
+                              </th>
+                            ))}
+                            <th style={{ padding: '12px', textAlign: 'center', fontSize: '11px', color: '#ff6b35', fontWeight: 600 }}>
+                              FINAL
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(pos => (
+                            <tr key={pos} style={{
+                              borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+                              background: pos <= 6 ? 'rgba(34, 197, 94, 0.05)' : pos <= 10 ? 'rgba(234, 179, 8, 0.05)' : 'transparent'
+                            }}>
+                              <td style={{ padding: '10px 12px', fontSize: '12px', color: '#666', fontWeight: 600, position: 'sticky', left: 0, background: '#0a0a0f' }}>
+                                {pos}
+                              </td>
+                              {getRoundProjections.filter((_, i) => i % 2 === 0).slice(0, 8).map(p => {
+                                const team = p.standings[pos - 1];
+                                const teamData = teams.find(t => t.code === team?.code);
+                                return (
+                                  <td key={p.round} style={{ padding: '10px 12px', textAlign: 'center', fontSize: '11px' }}>
+                                    <span style={{
+                                      color: team?.code === favoriteTeam ? '#ff6b35' : '#aaa',
+                                      fontWeight: team?.code === favoriteTeam ? 700 : 400
+                                    }}>
+                                      {team?.code || '-'}
+                                    </span>
+                                  </td>
+                                );
+                              })}
+                              <td style={{ padding: '10px 12px', textAlign: 'center' }}>
+                                {(() => {
+                                  const finalRound = getRoundProjections[getRoundProjections.length - 1];
+                                  const team = finalRound?.standings[pos - 1];
+                                  return (
+                                    <span style={{
+                                      fontWeight: 600,
+                                      color: team?.code === favoriteTeam ? '#ff6b35' : '#fff'
+                                    }}>
+                                      {team?.code || '-'}
+                                    </span>
+                                  );
+                                })()}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div style={{ marginTop: '12px', fontSize: '11px', color: '#666' }}>
+                      <span style={{ marginRight: '16px' }}><span style={{ color: '#22c55e' }}>■</span> Playoff (1-6)</span>
+                      <span><span style={{ color: '#eab308' }}>■</span> Play-In (7-10)</span>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -2946,6 +3166,158 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                 Add Match
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Team Comparison Modal */}
+      {showComparison && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0, 0, 0, 0.9)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          overflow: 'auto',
+          padding: '40px'
+        }} onClick={() => setShowComparison(false)}>
+          <div
+            className="glass"
+            style={{
+              padding: '32px',
+              borderRadius: '20px',
+              width: '100%',
+              maxWidth: '700px',
+              maxHeight: '90vh',
+              overflow: 'auto',
+              background: 'linear-gradient(135deg, #1a1a2e, #16213e)'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 700 }}>⚔️ Team Comparison</h2>
+              <button
+                onClick={() => setShowComparison(false)}
+                style={{ background: 'none', border: 'none', color: '#888', fontSize: '24px', cursor: 'pointer' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Team Selectors */}
+            <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
+              <select
+                value={compareTeams.team1}
+                onChange={e => setCompareTeams(prev => ({ ...prev, team1: e.target.value }))}
+                style={{ flex: 1 }}
+              >
+                <option value="">Select Team 1</option>
+                {teams.sort((a, b) => a.name.localeCompare(b.name)).map(t => (
+                  <option key={t.code} value={t.code}>{t.name}</option>
+                ))}
+              </select>
+              <span style={{ color: '#ff6b35', fontWeight: 700, alignSelf: 'center' }}>VS</span>
+              <select
+                value={compareTeams.team2}
+                onChange={e => setCompareTeams(prev => ({ ...prev, team2: e.target.value }))}
+                style={{ flex: 1 }}
+              >
+                <option value="">Select Team 2</option>
+                {teams.sort((a, b) => a.name.localeCompare(b.name)).map(t => (
+                  <option key={t.code} value={t.code}>{t.name}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Comparison Content */}
+            {compareTeams.team1 && compareTeams.team2 && (() => {
+              const data = getComparisonData(compareTeams.team1, compareTeams.team2);
+              if (!data) return null;
+
+              return (
+                <div>
+                  {/* Stats Comparison */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '16px', marginBottom: '24px' }}>
+                    <div style={{ textAlign: 'center', padding: '16px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
+                      <div style={{ fontSize: '18px', fontWeight: 700, marginBottom: '8px' }}>{data.team1.name}</div>
+                      <div style={{ fontSize: '24px', fontWeight: 700, color: '#22c55e' }}>{data.team1.wins}-{data.team1.losses}</div>
+                      <div style={{ fontSize: '13px', color: '#888', marginTop: '4px' }}>Rating: {data.team1.rating.toFixed(0)}</div>
+                      {data.team1.pred && (
+                        <div style={{ marginTop: '12px', fontSize: '12px', color: '#888' }}>
+                          <div>Playoff: {data.team1.pred.makePlayoffs.toFixed(0)}%</div>
+                          <div>F4: {data.team1.pred.finalFour.toFixed(0)}%</div>
+                          <div>Champ: {data.team1.pred.champion.toFixed(1)}%</div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                      <div style={{ fontSize: '32px' }}>⚔️</div>
+                      <div style={{ fontSize: '12px', color: '#666', marginTop: '8px' }}>
+                        {data.remainingGames1} games left
+                      </div>
+                    </div>
+
+                    <div style={{ textAlign: 'center', padding: '16px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
+                      <div style={{ fontSize: '18px', fontWeight: 700, marginBottom: '8px' }}>{data.team2.name}</div>
+                      <div style={{ fontSize: '24px', fontWeight: 700, color: '#22c55e' }}>{data.team2.wins}-{data.team2.losses}</div>
+                      <div style={{ fontSize: '13px', color: '#888', marginTop: '4px' }}>Rating: {data.team2.rating.toFixed(0)}</div>
+                      {data.team2.pred && (
+                        <div style={{ marginTop: '12px', fontSize: '12px', color: '#888' }}>
+                          <div>Playoff: {data.team2.pred.makePlayoffs.toFixed(0)}%</div>
+                          <div>F4: {data.team2.pred.finalFour.toFixed(0)}%</div>
+                          <div>Champ: {data.team2.pred.champion.toFixed(1)}%</div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* H2H Games */}
+                  {data.h2hGames.length > 0 && (
+                    <div style={{ marginBottom: '24px' }}>
+                      <h4 style={{ margin: '0 0 12px', fontSize: '14px', color: '#ff6b35' }}>Remaining Head-to-Head Games</h4>
+                      {data.h2hGames.map((game, idx) => (
+                        <div key={idx} style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '12px',
+                          background: 'rgba(0,0,0,0.2)',
+                          borderRadius: '8px',
+                          marginBottom: '8px'
+                        }}>
+                          <span style={{ fontWeight: game.homeProb > 50 ? 700 : 400, color: game.homeProb > 50 ? '#22c55e' : '#888' }}>
+                            {teams.find(t => t.code === game.home)?.name} (H)
+                          </span>
+                          <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '13px' }}>
+                            <span style={{ color: game.homeProb > 50 ? '#22c55e' : '#888' }}>{game.homeProb.toFixed(0)}%</span>
+                            <span style={{ color: '#444', margin: '0 8px' }}>-</span>
+                            <span style={{ color: game.awayProb > 50 ? '#22c55e' : '#888' }}>{game.awayProb.toFixed(0)}%</span>
+                          </span>
+                          <span style={{ fontWeight: game.awayProb > 50 ? 700 : 400, color: game.awayProb > 50 ? '#22c55e' : '#888' }}>
+                            {teams.find(t => t.code === game.away)?.name}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {data.h2hGames.length === 0 && (
+                    <p style={{ color: '#888', textAlign: 'center', padding: '16px' }}>
+                      No remaining head-to-head games between these teams.
+                    </p>
+                  )}
+                </div>
+              );
+            })()}
+
+            {(!compareTeams.team1 || !compareTeams.team2) && (
+              <p style={{ color: '#888', textAlign: 'center', padding: '32px' }}>
+                Select two teams to compare their stats and remaining matchups.
+              </p>
+            )}
           </div>
         </div>
       )}
