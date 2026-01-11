@@ -1,4 +1,39 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+
+// Team logo URL helper - EuroLeague CDN
+const getTeamLogo = (teamCode) => {
+  // EuroLeague uses specific image codes for each team
+  const logoMap = {
+    'HTA': 'HTA', 'MCO': 'MCO', 'PAM': 'PAM', 'BAR': 'BAR', 'ULK': 'ULK',
+    'MAD': 'MAD', 'PAN': 'PAN', 'OLY': 'OLY', 'ZAL': 'ZAL', 'RED': 'RED',
+    'MIL': 'MIL', 'VIR': 'VIR', 'DUB': 'DUB', 'TEL': 'TEL', 'PRS': 'PRS',
+    'BAS': 'BAS', 'MUN': 'MUN', 'IST': 'IST', 'ASV': 'ASV', 'PAR': 'PAR'
+  };
+  const code = logoMap[teamCode] || teamCode;
+  return `https://media-cdn.incrowdsports.com/5f351fc7-4f5a-48e0-a673-d5b8a99c62c0.png?tx=c_fill,w_60,h_60,q_auto:best&teamCode=${code}`;
+};
+
+// Color gradient helper for probabilities (red -> yellow -> green)
+const getProbabilityColor = (value, max = 100) => {
+  const pct = Math.min(value / max, 1);
+  if (pct < 0.33) {
+    // Red to Yellow
+    const r = 239;
+    const g = Math.round(68 + (171 * (pct / 0.33)));
+    const b = 68;
+    return `rgb(${r}, ${g}, ${b})`;
+  } else if (pct < 0.66) {
+    // Yellow to Green
+    const adjustedPct = (pct - 0.33) / 0.33;
+    const r = Math.round(234 - (200 * adjustedPct));
+    const g = Math.round(179 + (18 * adjustedPct));
+    const b = Math.round(8 + (77 * adjustedPct));
+    return `rgb(${r}, ${g}, ${b})`;
+  } else {
+    // Green
+    return '#22c55e';
+  }
+};
 
 // API Configuration
 const API_BASE = 'https://feeds.incrowdsports.com/provider/euroleague-feeds/v2';
@@ -294,6 +329,9 @@ export default function EuroLeaguePredictor() {
   const [gameFilterTeam, setGameFilterTeam] = useState('');
   const [gameFilterRound, setGameFilterRound] = useState('');
   const [showHelp, setShowHelp] = useState(false);
+  const [simulationProgress, setSimulationProgress] = useState(0);
+  const [compareTeams, setCompareTeams] = useState({ team1: '', team2: '' });
+  const [showComparison, setShowComparison] = useState(false);
 
   // Load data from storage on mount
   useEffect(() => {
@@ -669,8 +707,13 @@ export default function EuroLeaguePredictor() {
       // Track game win counts for predictions
       const gameWinCounts = {}; // gameIdx -> { home: count, away: count }
 
-      // Run simulations
+      // Run simulations with progress tracking
+      setSimulationProgress(0);
       for (let sim = 0; sim < SIMULATIONS; sim++) {
+        // Update progress every 100 simulations
+        if (sim % 100 === 0) {
+          setSimulationProgress(Math.round((sim / SIMULATIONS) * 100));
+        }
         // Clone current standings
         const simTeams = {};
         teams.forEach(t => {
@@ -929,6 +972,7 @@ export default function EuroLeaguePredictor() {
         console.error('Failed to save simulation results:', e);
       }
 
+      setSimulationProgress(100);
       setIsSimulating(false);
     }, 100);
   };
@@ -960,6 +1004,44 @@ export default function EuroLeaguePredictor() {
     a.download = `euroleague-predictions-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  // Share results as text
+  const shareResults = async () => {
+    if (!predictions) return;
+
+    const top6 = predictions.slice(0, 6);
+    const playIn = predictions.slice(6, 10);
+    const f4Favorites = predictions.filter(t => t.finalFour > 20).slice(0, 4);
+    const titleFavorite = predictions[0];
+
+    const text = `🏀 EuroLeague 2025-26 Predictions
+
+📊 Title Race:
+${titleFavorite.name}: ${titleFavorite.champion.toFixed(1)}% to win championship
+
+🏆 Projected Playoff Teams (Top 6):
+${top6.map((t, i) => `${i + 1}. ${t.name} (${t.makePlayoffs.toFixed(0)}%)`).join('\n')}
+
+🎯 Play-In Tournament (7-10):
+${playIn.map((t, i) => `${i + 7}. ${t.name} (${t.playInProb.toFixed(0)}%)`).join('\n')}
+
+🔥 Final Four Favorites:
+${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
+
+📈 Simulated with 5,000 Monte Carlo iterations
+🔗 https://euroleague-predictor-five.vercel.app`;
+
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: 'EuroLeague Predictions', text });
+      } else {
+        await navigator.clipboard.writeText(text);
+        alert('Results copied to clipboard!');
+      }
+    } catch (e) {
+      console.error('Share failed:', e);
+    }
   };
 
   // Export to JSON
@@ -1270,6 +1352,69 @@ export default function EuroLeaguePredictor() {
           color: #ff6b35;
           border-color: #ff6b35;
         }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+          header {
+            flex-direction: column !important;
+            gap: 16px !important;
+            padding: 16px !important;
+          }
+
+          header > div {
+            flex-wrap: wrap !important;
+            justify-content: center !important;
+          }
+
+          nav {
+            padding: 0 16px !important;
+            overflow-x: auto !important;
+          }
+
+          .tab {
+            padding: 12px 16px !important;
+            white-space: nowrap;
+          }
+
+          main {
+            padding: 16px !important;
+          }
+
+          table {
+            font-size: 12px !important;
+          }
+
+          td, th {
+            padding: 8px !important;
+          }
+
+          .glass {
+            padding: 16px !important;
+          }
+
+          .summary-cards {
+            grid-template-columns: 1fr 1fr !important;
+          }
+
+          .hide-mobile {
+            display: none !important;
+          }
+        }
+
+        @media (max-width: 480px) {
+          h1 {
+            font-size: 20px !important;
+          }
+
+          .summary-cards {
+            grid-template-columns: 1fr !important;
+          }
+
+          .btn {
+            padding: 10px 16px !important;
+            font-size: 13px !important;
+          }
+        }
       `}</style>
 
       {/* Header */}
@@ -1302,6 +1447,12 @@ export default function EuroLeaguePredictor() {
             }}>EuroLeague Predictor</h1>
             <p style={{ margin: 0, fontSize: '13px', color: '#666', fontFamily: "'Space Mono', monospace" }}>
               2025-26 Season · Monte Carlo Simulation
+              <span
+                onClick={() => setShowHelp(true)}
+                style={{ marginLeft: '12px', color: '#ff6b35', cursor: 'pointer', textDecoration: 'underline' }}
+              >
+                How does this work?
+              </span>
               {lastUpdate && (
                 <span style={{ marginLeft: '12px', color: '#888' }}>
                   · Updated: {new Date(lastUpdate).toLocaleDateString()}
@@ -1416,12 +1567,25 @@ export default function EuroLeaguePredictor() {
                         </td>
                         <td style={{ padding: '14px 16px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <img
+                              src={getTeamLogo(team.code)}
+                              alt={team.code}
+                              style={{
+                                width: '36px',
+                                height: '36px',
+                                borderRadius: '8px',
+                                background: isFavorite ? 'linear-gradient(135deg, #ff6b35, #f7931e)' : 'linear-gradient(135deg, #2a2a4e, #1a1a2e)',
+                                objectFit: 'contain',
+                                padding: '4px'
+                              }}
+                              onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+                            />
                             <span style={{
                               width: '36px',
                               height: '36px',
                               borderRadius: '8px',
                               background: isFavorite ? 'linear-gradient(135deg, #ff6b35, #f7931e)' : 'linear-gradient(135deg, #2a2a4e, #1a1a2e)',
-                              display: 'flex',
+                              display: 'none',
                               alignItems: 'center',
                               justifyContent: 'center',
                               fontSize: '11px',
@@ -1640,6 +1804,9 @@ export default function EuroLeaguePredictor() {
                     <button className="btn btn-secondary btn-small" onClick={exportToJSON}>
                       Export JSON
                     </button>
+                    <button className="btn btn-secondary btn-small" onClick={shareResults} style={{ background: 'linear-gradient(135deg, #3b82f6, #2563eb)', border: 'none' }}>
+                      📤 Share
+                    </button>
                   </>
                 )}
                 <button
@@ -1668,10 +1835,31 @@ export default function EuroLeaguePredictor() {
             )}
 
             {isSimulating && (
-              <div className="glass" style={{ padding: '40px', borderRadius: '16px' }}>
-                {[...Array(10)].map((_, i) => (
-                  <div key={i} className="loading" style={{ height: '48px', borderRadius: '8px', marginBottom: '8px' }}></div>
-                ))}
+              <div className="glass" style={{ padding: '40px', borderRadius: '16px', textAlign: 'center' }}>
+                <div style={{ fontSize: '48px', marginBottom: '16px' }}>🎲</div>
+                <h3 style={{ margin: '0 0 8px', fontSize: '18px' }}>Running Simulation</h3>
+                <p style={{ color: '#888', margin: '0 0 24px', fontSize: '14px' }}>
+                  Simulating {SIMULATIONS.toLocaleString()} seasons...
+                </p>
+                <div style={{
+                  width: '100%',
+                  height: '8px',
+                  background: 'rgba(255,255,255,0.1)',
+                  borderRadius: '4px',
+                  overflow: 'hidden',
+                  marginBottom: '12px'
+                }}>
+                  <div style={{
+                    width: `${simulationProgress}%`,
+                    height: '100%',
+                    background: 'linear-gradient(90deg, #ff6b35, #f59e0b)',
+                    borderRadius: '4px',
+                    transition: 'width 0.1s ease'
+                  }}></div>
+                </div>
+                <div style={{ fontFamily: "'Space Mono', monospace", color: '#ff6b35', fontSize: '14px' }}>
+                  {simulationProgress}% complete
+                </div>
               </div>
             )}
 
