@@ -1451,65 +1451,279 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
         }
 
         /* Mobile Responsiveness */
+        @media (max-width: 900px) {
+          .hide-tablet {
+            display: none !important;
+          }
+        }
+
         @media (max-width: 768px) {
           header {
             flex-direction: column !important;
-            gap: 16px !important;
-            padding: 16px !important;
+            gap: 12px !important;
+            padding: 12px !important;
+            text-align: center;
           }
 
           header > div {
             flex-wrap: wrap !important;
             justify-content: center !important;
+            gap: 8px !important;
+          }
+
+          header h1 {
+            font-size: 22px !important;
+          }
+
+          header p {
+            font-size: 11px !important;
+          }
+
+          header select {
+            min-width: 120px !important;
+            font-size: 12px !important;
+            padding: 8px 10px !important;
+          }
+
+          header button {
+            padding: 8px 12px !important;
+            font-size: 11px !important;
           }
 
           nav {
-            padding: 0 16px !important;
+            padding: 0 8px !important;
             overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch;
           }
 
           .tab {
-            padding: 12px 16px !important;
+            padding: 10px 12px !important;
+            font-size: 13px !important;
             white-space: nowrap;
           }
 
           main {
-            padding: 16px !important;
-          }
-
-          table {
-            font-size: 12px !important;
-          }
-
-          td, th {
-            padding: 8px !important;
+            padding: 12px !important;
           }
 
           .glass {
-            padding: 16px !important;
+            padding: 12px !important;
+            border-radius: 12px !important;
           }
 
-          .summary-cards {
+          h2 {
+            font-size: 16px !important;
+          }
+
+          h3 {
+            font-size: 14px !important;
+          }
+
+          /* Tables */
+          .table-container {
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch;
+            margin: 0 -12px;
+            padding: 0 12px;
+          }
+
+          table {
+            font-size: 11px !important;
+            min-width: 500px;
+          }
+
+          td, th {
+            padding: 6px 8px !important;
+          }
+
+          /* Team logos/badges smaller */
+          td img, td span[style*="36px"] {
+            width: 28px !important;
+            height: 28px !important;
+          }
+
+          /* Summary cards */
+          .summary-cards, div[style*="grid-template-columns: repeat(4"] {
             grid-template-columns: 1fr 1fr !important;
+            gap: 8px !important;
           }
 
+          .summary-cards > div, div[style*="grid-template-columns: repeat(4"] > div {
+            padding: 12px !important;
+          }
+
+          .summary-cards h3, .summary-cards div[style*="font-size: 24px"] {
+            font-size: 18px !important;
+          }
+
+          /* Buttons */
+          .btn {
+            padding: 8px 14px !important;
+            font-size: 12px !important;
+          }
+
+          .btn-small {
+            padding: 6px 10px !important;
+            font-size: 11px !important;
+          }
+
+          /* Filters */
+          select {
+            font-size: 12px !important;
+            padding: 8px 10px !important;
+            min-width: 100px !important;
+          }
+
+          /* Modal fixes */
+          div[style*="position: fixed"] > div {
+            padding: 16px !important;
+            margin: 16px !important;
+            max-height: 85vh !important;
+          }
+
+          /* Final Four bracket */
+          div[style*="grid-template-columns: 1fr 1fr 1fr 1fr 1fr"] {
+            grid-template-columns: 1fr !important;
+            gap: 16px !important;
+          }
+
+          /* Hide non-essential columns */
           .hide-mobile {
             display: none !important;
+          }
+
+          /* Probability bar */
+          .probability-bar {
+            height: 24px !important;
+          }
+
+          .prob-segment {
+            font-size: 9px !important;
+          }
+
+          /* Schedule card mobile layout */
+          .schedule-card {
+            padding: 12px !important;
+          }
+
+          .schedule-card .game-info {
+            flex-direction: column !important;
+            gap: 12px !important;
+            align-items: stretch !important;
+          }
+
+          .schedule-card .game-meta {
+            justify-content: flex-start !important;
+          }
+
+          .schedule-card .game-teams {
+            flex-direction: column !important;
+            gap: 12px !important;
+            width: 100% !important;
+          }
+
+          .schedule-card .team-home {
+            flex-direction: row-reverse !important;
+            justify-content: flex-end !important;
+            text-align: left !important;
+          }
+
+          .schedule-card .team-away {
+            justify-content: flex-start !important;
+          }
+
+          .schedule-card .vs-buttons {
+            justify-content: center !important;
+            align-self: center !important;
+          }
+
+          .schedule-card .team-home span,
+          .schedule-card .team-away span {
+            font-size: 13px !important;
+          }
+
+          /* Win prob badges smaller */
+          .win-prob {
+            padding: 3px 6px !important;
+            font-size: 10px !important;
+          }
+
+          /* What-if buttons */
+          .whatif-btn {
+            padding: 4px 10px !important;
+            font-size: 11px !important;
+          }
+
+          /* Filter section on mobile */
+          div[style*="justifyContent: 'space-between'"] {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 12px !important;
           }
         }
 
         @media (max-width: 480px) {
-          h1 {
-            font-size: 20px !important;
+          header h1 {
+            font-size: 18px !important;
           }
 
-          .summary-cards {
+          header p {
+            font-size: 10px !important;
+          }
+
+          header > div:last-child {
+            width: 100%;
+          }
+
+          header select, header button {
+            flex: 1;
+            min-width: 0 !important;
+          }
+
+          .tab {
+            padding: 8px 10px !important;
+            font-size: 12px !important;
+          }
+
+          main {
+            padding: 8px !important;
+          }
+
+          .glass {
+            padding: 10px !important;
+            border-radius: 8px !important;
+          }
+
+          h2 {
+            font-size: 14px !important;
+          }
+
+          /* Single column cards */
+          .summary-cards, div[style*="grid-template-columns: repeat(4"] {
             grid-template-columns: 1fr !important;
           }
 
+          table {
+            font-size: 10px !important;
+          }
+
+          td, th {
+            padding: 4px 6px !important;
+          }
+
+          td img, td span[style*="36px"] {
+            width: 24px !important;
+            height: 24px !important;
+          }
+
           .btn {
-            padding: 10px 16px !important;
-            font-size: 13px !important;
+            padding: 6px 10px !important;
+            font-size: 11px !important;
+          }
+
+          /* Stack buttons vertically */
+          div[style*="display: flex"][style*="gap: 12px"] {
+            flex-direction: column !important;
           }
         }
       `}</style>
@@ -1638,14 +1852,14 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                   <tr style={{ background: 'rgba(255, 255, 255, 0.05)' }}>
                     <th style={{ padding: '16px', textAlign: 'left', fontSize: '12px', color: '#888', fontWeight: 500 }}>#</th>
                     <th style={{ padding: '16px', textAlign: 'left', fontSize: '12px', color: '#888', fontWeight: 500 }}>TEAM</th>
-                    <th style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>GP</th>
+                    <th className="hide-mobile" style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>GP</th>
                     <th style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>W</th>
                     <th style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>L</th>
-                    <th style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>WIN%</th>
-                    <th style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>PTS+</th>
-                    <th style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>PTS-</th>
+                    <th className="hide-mobile" style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>WIN%</th>
+                    <th className="hide-mobile" style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>PTS+</th>
+                    <th className="hide-mobile" style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>PTS-</th>
                     <th style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>+/-</th>
-                    <th style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>RATING</th>
+                    <th className="hide-mobile" style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>RATING</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1696,14 +1910,14 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                             {isFavorite && <span style={{ fontSize: '14px' }}>⭐</span>}
                           </div>
                         </td>
-                        <td style={{ padding: '14px 16px', textAlign: 'center', fontFamily: "'Space Mono', monospace" }}>{games}</td>
+                        <td className="hide-mobile" style={{ padding: '14px 16px', textAlign: 'center', fontFamily: "'Space Mono', monospace" }}>{games}</td>
                         <td style={{ padding: '14px 16px', textAlign: 'center', fontFamily: "'Space Mono', monospace", color: '#22c55e', fontWeight: 600 }}>{team.wins}</td>
                         <td style={{ padding: '14px 16px', textAlign: 'center', fontFamily: "'Space Mono', monospace", color: '#ef4444', fontWeight: 600 }}>{team.losses}</td>
-                        <td style={{ padding: '14px 16px', textAlign: 'center', fontFamily: "'Space Mono', monospace" }}>
+                        <td className="hide-mobile" style={{ padding: '14px 16px', textAlign: 'center', fontFamily: "'Space Mono', monospace" }}>
                           {games > 0 ? ((team.wins / games) * 100).toFixed(1) : 0}%
                         </td>
-                        <td style={{ padding: '14px 16px', textAlign: 'center', fontFamily: "'Space Mono', monospace", color: '#888' }}>{team.ptsFor}</td>
-                        <td style={{ padding: '14px 16px', textAlign: 'center', fontFamily: "'Space Mono', monospace", color: '#888' }}>{team.ptsAgainst}</td>
+                        <td className="hide-mobile" style={{ padding: '14px 16px', textAlign: 'center', fontFamily: "'Space Mono', monospace", color: '#888' }}>{team.ptsFor}</td>
+                        <td className="hide-mobile" style={{ padding: '14px 16px', textAlign: 'center', fontFamily: "'Space Mono', monospace", color: '#888' }}>{team.ptsAgainst}</td>
                         <td style={{
                           padding: '14px 16px',
                           textAlign: 'center',
@@ -1713,7 +1927,7 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                         }}>
                           {diff > 0 ? '+' : ''}{diff}
                         </td>
-                        <td style={{ padding: '14px 16px', textAlign: 'center', fontFamily: "'Space Mono', monospace", color: '#ff6b35', fontWeight: 600 }}>
+                        <td className="hide-mobile" style={{ padding: '14px 16px', textAlign: 'center', fontFamily: "'Space Mono', monospace", color: '#ff6b35', fontWeight: 600 }}>
                           {calculateRating(team).toFixed(0)}
                         </td>
                       </tr>
@@ -1792,7 +2006,7 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                   const isAwayFavorite = game.away === favoriteTeam;
 
                   return (
-                    <div key={idx} className="glass" style={{
+                    <div key={idx} className="glass schedule-card" style={{
                       padding: '16px 24px',
                       borderRadius: '12px',
                       display: 'flex',
@@ -1800,31 +2014,32 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                       justifyContent: 'space-between',
                       borderLeft: (isHomeFavorite || isAwayFavorite) ? '3px solid #ff6b35' : 'none'
                     }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flex: 1 }}>
-                        <div style={{
-                          fontSize: '12px',
-                          color: '#ff6b35',
-                          fontFamily: "'Space Mono', monospace",
-                          minWidth: '60px',
-                          fontWeight: 600
-                        }}>
-                          R{game.round}
+                      <div className="game-info" style={{ display: 'flex', alignItems: 'center', gap: '24px', flex: 1 }}>
+                        <div className="game-meta" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <div style={{
+                            fontSize: '12px',
+                            color: '#ff6b35',
+                            fontFamily: "'Space Mono', monospace",
+                            minWidth: '40px',
+                            fontWeight: 600
+                          }}>
+                            R{game.round}
+                          </div>
+                          <div className="hide-mobile" style={{
+                            fontSize: '12px',
+                            color: '#666',
+                            fontFamily: "'Space Mono', monospace"
+                          }}>
+                            {gameDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          </div>
                         </div>
-                        <div style={{
-                          fontSize: '12px',
-                          color: '#666',
-                          fontFamily: "'Space Mono', monospace",
-                          minWidth: '100px'
-                        }}>
-                          {gameDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1 }}>
-                          <div style={{ flex: 1, textAlign: 'right', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px' }}>
-                            <span style={{ fontWeight: isHomeFavorite ? 700 : 500 }}>
+                        <div className="game-teams" style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1 }}>
+                          <div className="team-home" style={{ flex: 1, textAlign: 'right', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px' }}>
+                            <span style={{ fontWeight: isHomeFavorite ? 700 : 500, fontSize: '14px' }}>
                               {homeTeam?.name || game.home}
                               {isHomeFavorite && ' ⭐'}
                             </span>
-                            <span style={{ color: '#666', fontSize: '12px' }}>(H)</span>
+                            <span className="hide-mobile" style={{ color: '#666', fontSize: '12px' }}>(H)</span>
                             {pred && (
                               <span className="win-prob" style={{
                                 background: pred.homeWinProb > 50 ? 'rgba(34, 197, 94, 0.2)' : 'rgba(255, 255, 255, 0.05)',
@@ -1834,7 +2049,7 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                               </span>
                             )}
                           </div>
-                          <div style={{ display: 'flex', gap: '4px' }}>
+                          <div className="vs-buttons" style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
                             <button
                               className={`whatif-btn home ${whatIf === 'home' ? 'active' : ''}`}
                               onClick={() => setWhatIfResult(actualIdx, whatIf === 'home' ? null : 'home')}
@@ -1859,7 +2074,7 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                               W
                             </button>
                           </div>
-                          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div className="team-away" style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
                             {pred && (
                               <span className="win-prob" style={{
                                 background: pred.awayWinProb > 50 ? 'rgba(34, 197, 94, 0.2)' : 'rgba(255, 255, 255, 0.05)',
@@ -1868,7 +2083,7 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                                 {pred.awayWinProb.toFixed(0)}%
                               </span>
                             )}
-                            <span style={{ fontWeight: isAwayFavorite ? 700 : 500 }}>
+                            <span style={{ fontWeight: isAwayFavorite ? 700 : 500, fontSize: '14px' }}>
                               {awayTeam?.name || game.away}
                               {isAwayFavorite && ' ⭐'}
                             </span>
@@ -2046,13 +2261,13 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                       <tr style={{ background: 'rgba(255, 255, 255, 0.05)' }}>
                         <th style={{ padding: '16px', textAlign: 'left', fontSize: '12px', color: '#888', fontWeight: 500 }}>#</th>
                         <th style={{ padding: '16px', textAlign: 'left', fontSize: '12px', color: '#888', fontWeight: 500 }}>TEAM</th>
-                        <th style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>PROJ W-L</th>
+                        <th className="hide-mobile" style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>PROJ W-L</th>
                         <th style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>AVG</th>
-                        <th style={{ padding: '16px', textAlign: 'left', fontSize: '12px', color: '#888', fontWeight: 500, width: '20%' }}>REGULAR SEASON</th>
+                        <th className="hide-mobile" style={{ padding: '16px', textAlign: 'left', fontSize: '12px', color: '#888', fontWeight: 500, width: '20%' }}>REGULAR SEASON</th>
                         <th style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>PLAYOFFS</th>
                         <th style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>F4</th>
                         <th style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>CHAMP</th>
-                        <th style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>CHART</th>
+                        <th className="hide-mobile" style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>CHART</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -2087,7 +2302,7 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                                 </div>
                               </div>
                             </td>
-                            <td style={{ padding: '14px 16px', textAlign: 'center' }}>
+                            <td className="hide-mobile" style={{ padding: '14px 16px', textAlign: 'center' }}>
                               <span style={{
                                 fontFamily: "'Space Mono', monospace",
                                 fontSize: '15px',
@@ -2109,7 +2324,7 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                                 fontWeight: 700
                               }}>{team.avgPosition.toFixed(1)}</span>
                             </td>
-                            <td style={{ padding: '14px 16px' }}>
+                            <td className="hide-mobile" style={{ padding: '14px 16px' }}>
                               <div className="probability-bar">
                                 {team.playoffProb > 3 && (
                                   <div
@@ -2155,7 +2370,7 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                             <td style={{ padding: '14px 16px', textAlign: 'center', fontFamily: "'Space Mono', monospace", color: team.champion > 5 ? '#f59e0b' : '#888', fontWeight: team.champion > 10 ? 700 : 400 }}>
                               {team.champion.toFixed(1)}%
                             </td>
-                            <td style={{ padding: '14px 16px', textAlign: 'center' }}>
+                            <td className="hide-mobile" style={{ padding: '14px 16px', textAlign: 'center' }}>
                               <button
                                 className="btn btn-secondary btn-small"
                                 onClick={() => setShowChart(team)}
@@ -2268,7 +2483,7 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                         <thead>
                           <tr style={{ background: 'rgba(255, 255, 255, 0.03)', position: 'sticky', top: 0 }}>
                             <th style={{ padding: '12px', textAlign: 'left', fontSize: '11px', color: '#888', fontWeight: 500 }}>ROUND</th>
-                            <th style={{ padding: '12px', textAlign: 'left', fontSize: '11px', color: '#888', fontWeight: 500 }}>DATE</th>
+                            <th className="hide-mobile" style={{ padding: '12px', textAlign: 'left', fontSize: '11px', color: '#888', fontWeight: 500 }}>DATE</th>
                             <th style={{ padding: '12px', textAlign: 'right', fontSize: '11px', color: '#888', fontWeight: 500 }}>HOME</th>
                             <th style={{ padding: '12px', textAlign: 'center', fontSize: '11px', color: '#888', fontWeight: 500 }}>WIN %</th>
                             <th style={{ padding: '12px', textAlign: 'left', fontSize: '11px', color: '#888', fontWeight: 500 }}>AWAY</th>
@@ -2291,7 +2506,7 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                                 <td style={{ padding: '10px 12px', fontSize: '12px', color: '#666', fontFamily: "'Space Mono', monospace" }}>
                                   R{game.round}
                                 </td>
-                                <td style={{ padding: '10px 12px', fontSize: '12px', color: '#888' }}>
+                                <td className="hide-mobile" style={{ padding: '10px 12px', fontSize: '12px', color: '#888' }}>
                                   {game.date}
                                 </td>
                                 <td style={{ padding: '10px 12px', textAlign: 'right' }}>
