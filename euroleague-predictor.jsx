@@ -255,6 +255,8 @@ const initialSchedule = [
   { round: 38, home: 'MCO', away: 'HTA', date: '2026-04-17' },
   { round: 38, home: 'PAN', away: 'IST', date: '2026-04-17' },
   { round: 38, home: 'BAR', away: 'MUN', date: '2026-04-17' },
+  // Postponed game (OLY vs ULK) - date TBD
+  { round: 39, home: 'OLY', away: 'ULK', date: '2026-04-20' },
 ];
 
 const TOTAL_GAMES = 38;
