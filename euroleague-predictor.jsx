@@ -2079,7 +2079,7 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                 onClick={() => setScheduleView('upcoming')}
                 style={{ fontSize: '14px' }}
               >
-                Upcoming ({schedule.length})
+                Upcoming ({schedule.filter(g => !playedGames.some(pg => pg.home === g.home && pg.away === g.away && pg.round === g.round)).length})
               </button>
               <button
                 className={`btn ${scheduleView === 'results' ? 'btn-primary' : 'btn-secondary'}`}
@@ -2096,7 +2096,7 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
               <div>
                 <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 600 }}>Upcoming Schedule</h2>
                 <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#666' }}>
-                  {schedule.length} games remaining · Click to set what-if outcomes
+                  {schedule.filter(g => !playedGames.some(pg => pg.home === g.home && pg.away === g.away && pg.round === g.round)).length} games remaining · Click to set what-if outcomes
                   {Object.keys(whatIfResults).length > 0 && (
                     <span style={{ color: '#ff6b35', marginLeft: '8px' }}>
                       ({Object.keys(whatIfResults).length} what-if set)
@@ -2128,6 +2128,7 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {(selectedRound === 0 ? schedule : schedule.filter(g => g.round === selectedRound))
+                .filter(game => !playedGames.some(pg => pg.home === game.home && pg.away === game.away && pg.round === game.round))
                 .map((game, idx) => {
                   const actualIdx = schedule.findIndex(g => g === game);
                   const homeTeam = teams.find(t => t.code === game.home);
@@ -2237,7 +2238,7 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                 <div>
                   <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 600 }}>Game Results</h2>
                   <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#666' }}>
-                    {playedGames.length} games played · See if predictions were correct
+                    {playedGames.length} games played this season
                   </p>
                 </div>
               </div>
@@ -2254,13 +2255,7 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                     const homeTeam = teams.find(t => t.code === game.home);
                     const awayTeam = teams.find(t => t.code === game.away);
                     const homeWon = game.homeScore > game.awayScore;
-
-                    // Calculate what our prediction would have been
-                    const homeRating = 1500 + ((homeTeam?.wins || 0) / Math.max((homeTeam?.wins || 0) + (homeTeam?.losses || 0), 1) - 0.5) * 400;
-                    const awayRating = 1500 + ((awayTeam?.wins || 0) / Math.max((awayTeam?.wins || 0) + (awayTeam?.losses || 0), 1) - 0.5) * 400;
-                    const predictedHomeWinProb = 1 / (1 + Math.pow(10, (awayRating - homeRating - 50) / 400));
-                    const predictedHomeWin = predictedHomeWinProb > 0.5;
-                    const predictionCorrect = predictedHomeWin === homeWon;
+                    const gameDate = new Date(game.date);
 
                     return (
                       <div key={idx} className="glass" style={{
@@ -2268,18 +2263,25 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                         borderRadius: '12px',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'space-between',
-                        borderLeft: predictionCorrect ? '3px solid #22c55e' : '3px solid #ef4444'
+                        justifyContent: 'space-between'
                       }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1 }}>
-                          <div style={{
-                            fontSize: '12px',
-                            color: '#ff6b35',
-                            fontFamily: "'Space Mono', monospace",
-                            minWidth: '40px',
-                            fontWeight: 600
-                          }}>
-                            R{game.round}
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '50px' }}>
+                            <div style={{
+                              fontSize: '12px',
+                              color: '#ff6b35',
+                              fontFamily: "'Space Mono', monospace",
+                              fontWeight: 600
+                            }}>
+                              R{game.round}
+                            </div>
+                            <div style={{
+                              fontSize: '10px',
+                              color: '#666',
+                              fontFamily: "'Space Mono', monospace"
+                            }}>
+                              {gameDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            </div>
                           </div>
 
                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
@@ -2295,8 +2297,11 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                               fontFamily: "'Space Mono', monospace",
                               fontSize: '16px',
                               fontWeight: 700,
-                              minWidth: '70px',
-                              textAlign: 'center'
+                              minWidth: '80px',
+                              textAlign: 'center',
+                              background: 'rgba(255, 255, 255, 0.05)',
+                              padding: '4px 12px',
+                              borderRadius: '6px'
                             }}>
                               {game.homeScore} - {game.awayScore}
                             </span>
@@ -2308,27 +2313,6 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                               {awayTeam?.name || game.away}
                             </span>
                           </div>
-                        </div>
-
-                        <div style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '12px',
-                          fontSize: '13px'
-                        }}>
-                          <span style={{ color: '#666' }}>
-                            Predicted: {(predictedHomeWinProb * 100).toFixed(0)}% {homeTeam?.name || game.home}
-                          </span>
-                          <span style={{
-                            padding: '4px 8px',
-                            borderRadius: '4px',
-                            fontSize: '11px',
-                            fontWeight: 600,
-                            background: predictionCorrect ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)',
-                            color: predictionCorrect ? '#22c55e' : '#ef4444'
-                          }}>
-                            {predictionCorrect ? '✓ Correct' : '✗ Wrong'}
-                          </span>
                         </div>
                       </div>
                     );
