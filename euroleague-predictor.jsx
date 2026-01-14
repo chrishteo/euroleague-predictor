@@ -1944,6 +1944,9 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
         <button className={`tab ${activeTab === 'matches' ? 'active' : ''}`} onClick={() => setActiveTab('matches')}>
           Matches ({matches.length})
         </button>
+        <button className={`tab ${activeTab === 'methodology' ? 'active' : ''}`} onClick={() => setActiveTab('methodology')}>
+          How It Works
+        </button>
       </nav>
 
       {/* Main Content */}
@@ -3736,6 +3739,251 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* How It Works Tab */}
+        {activeTab === 'methodology' && (
+          <div style={{ maxWidth: '900px' }}>
+            <div style={{ marginBottom: '32px' }}>
+              <h2 style={{ margin: 0, fontSize: '24px', fontWeight: 600 }}>How the Prediction System Works</h2>
+              <p style={{ margin: '8px 0 0', fontSize: '14px', color: '#888' }}>
+                A step-by-step guide to how we predict EuroLeague outcomes
+              </p>
+            </div>
+
+            {/* Step 1: Team Ratings */}
+            <div className="glass" style={{ padding: '24px', borderRadius: '16px', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                <span style={{ background: '#ff6b35', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>1</span>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600 }}>Calculate Team Ratings</h3>
+              </div>
+              <p style={{ color: '#aaa', marginBottom: '16px', lineHeight: 1.6 }}>
+                Each team gets an <strong style={{ color: '#fff' }}>ELO-like rating</strong> based on their performance. The formula considers win percentage and average point differential:
+              </p>
+              <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '8px', fontFamily: "'Space Mono', monospace", marginBottom: '16px' }}>
+                <div style={{ color: '#ff6b35', marginBottom: '8px' }}>Rating = 1500 + (WinPct - 0.5) × 400 + AvgMargin × 10</div>
+                <div style={{ fontSize: '12px', color: '#888' }}>
+                  • Base rating: 1500 (average team)<br/>
+                  • Win percentage: +/-200 points max (50% = 0 bonus)<br/>
+                  • Point differential: +/-10 per point of avg margin
+                </div>
+              </div>
+              <div style={{ background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', padding: '16px', borderRadius: '8px' }}>
+                <div style={{ color: '#22c55e', fontWeight: 600, marginBottom: '8px' }}>Example with current data:</div>
+                <div style={{ fontSize: '13px', color: '#aaa' }}>
+                  {(() => {
+                    const topTeam = [...teams].sort((a, b) => calculateRating(b) - calculateRating(a))[0];
+                    const games = topTeam.wins + topTeam.losses;
+                    const winPct = (topTeam.wins / games).toFixed(3);
+                    const margin = ((topTeam.ptsFor - topTeam.ptsAgainst) / games).toFixed(1);
+                    const rating = calculateRating(topTeam).toFixed(0);
+                    return (
+                      <>
+                        <strong>{topTeam.name}</strong>: {topTeam.wins}W-{topTeam.losses}L ({(winPct * 100).toFixed(1)}%), +{margin} avg margin<br/>
+                        Rating = 1500 + ({winPct} - 0.5) × 400 + {margin} × 10 = <strong style={{ color: '#22c55e' }}>{rating}</strong>
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
+            </div>
+
+            {/* Step 2: Win Probability */}
+            <div className="glass" style={{ padding: '24px', borderRadius: '16px', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                <span style={{ background: '#ff6b35', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>2</span>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600 }}>Calculate Win Probability</h3>
+              </div>
+              <p style={{ color: '#aaa', marginBottom: '16px', lineHeight: 1.6 }}>
+                Using the <strong style={{ color: '#fff' }}>ELO formula</strong>, we calculate the probability of each team winning:
+              </p>
+              <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '8px', fontFamily: "'Space Mono', monospace", marginBottom: '16px' }}>
+                <div style={{ color: '#ff6b35', marginBottom: '8px' }}>P(Home Wins) = 1 / (1 + 10^((AwayRating - HomeRating - 50) / 400))</div>
+                <div style={{ fontSize: '12px', color: '#888' }}>
+                  • Home court advantage: +50 rating points (~3-4 point spread)<br/>
+                  • 400 rating difference = ~90% win probability<br/>
+                  • Equal ratings at home = ~57% win probability
+                </div>
+              </div>
+              <div style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.3)', padding: '16px', borderRadius: '8px' }}>
+                <div style={{ color: '#3b82f6', fontWeight: 600, marginBottom: '8px' }}>Example matchup:</div>
+                <div style={{ fontSize: '13px', color: '#aaa' }}>
+                  {(() => {
+                    const sorted = [...teams].sort((a, b) => calculateRating(b) - calculateRating(a));
+                    const team1 = sorted[0];
+                    const team2 = sorted[sorted.length - 1];
+                    const r1 = calculateRating(team1);
+                    const r2 = calculateRating(team2);
+                    const prob = expectedWinProb(r1, r2, true) * 100;
+                    return (
+                      <>
+                        <strong>{team1.name}</strong> (rating: {r1.toFixed(0)}) vs <strong>{team2.name}</strong> (rating: {r2.toFixed(0)})<br/>
+                        At home, {team1.name} has <strong style={{ color: '#3b82f6' }}>{prob.toFixed(1)}%</strong> chance to win
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
+            </div>
+
+            {/* Step 3: Monte Carlo */}
+            <div className="glass" style={{ padding: '24px', borderRadius: '16px', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                <span style={{ background: '#ff6b35', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>3</span>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600 }}>Monte Carlo Simulation</h3>
+              </div>
+              <p style={{ color: '#aaa', marginBottom: '16px', lineHeight: 1.6 }}>
+                We simulate the <strong style={{ color: '#fff' }}>entire remaining season {SIMULATIONS.toLocaleString()} times</strong>. For each game:
+              </p>
+              <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
+                <ol style={{ margin: 0, paddingLeft: '20px', color: '#aaa', lineHeight: 2 }}>
+                  <li>Calculate win probability for each team</li>
+                  <li>Generate a random number between 0 and 1</li>
+                  <li>If random &lt; probability, home team wins; otherwise away wins</li>
+                  <li>Update standings and repeat for all remaining games</li>
+                  <li>Record final positions, playoff results, and champion</li>
+                </ol>
+              </div>
+              <div style={{ background: 'rgba(168, 85, 247, 0.1)', border: '1px solid rgba(168, 85, 247, 0.3)', padding: '16px', borderRadius: '8px' }}>
+                <div style={{ color: '#a855f7', fontWeight: 600, marginBottom: '8px' }}>Why {SIMULATIONS.toLocaleString()} simulations?</div>
+                <div style={{ fontSize: '13px', color: '#aaa' }}>
+                  More simulations = more accurate probabilities. With {SIMULATIONS.toLocaleString()} runs, our margin of error is ~±1.4%. This gives us reliable percentages for even rare outcomes (like a last-place team winning the championship).
+                </div>
+              </div>
+            </div>
+
+            {/* Step 4: Regular Season */}
+            <div className="glass" style={{ padding: '24px', borderRadius: '16px', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                <span style={{ background: '#ff6b35', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>4</span>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600 }}>Regular Season Tiebreakers</h3>
+              </div>
+              <p style={{ color: '#aaa', marginBottom: '16px', lineHeight: 1.6 }}>
+                After simulating all games, teams are ranked by:
+              </p>
+              <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '8px' }}>
+                <ol style={{ margin: 0, paddingLeft: '20px', color: '#aaa', lineHeight: 2 }}>
+                  <li><strong style={{ color: '#fff' }}>Win percentage</strong> - Primary sorting criteria</li>
+                  <li><strong style={{ color: '#fff' }}>Head-to-head record</strong> - Between tied teams</li>
+                  <li><strong style={{ color: '#fff' }}>Point differential</strong> - If still tied</li>
+                </ol>
+              </div>
+            </div>
+
+            {/* Step 5: Play-In */}
+            <div className="glass" style={{ padding: '24px', borderRadius: '16px', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                <span style={{ background: '#ff6b35', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>5</span>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600 }}>Play-In Tournament</h3>
+              </div>
+              <p style={{ color: '#aaa', marginBottom: '16px', lineHeight: 1.6 }}>
+                Teams ranked <strong style={{ color: '#eab308' }}>7th through 10th</strong> compete in a mini-tournament for the final two playoff spots:
+              </p>
+              <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '8px', fontFamily: "'Space Mono', monospace", fontSize: '13px' }}>
+                <div style={{ marginBottom: '12px' }}>
+                  <span style={{ color: '#eab308' }}>Game 1:</span> 7th vs 8th → Winner gets <span style={{ color: '#22c55e' }}>7th seed</span>
+                </div>
+                <div style={{ marginBottom: '12px' }}>
+                  <span style={{ color: '#eab308' }}>Game 2:</span> 9th vs 10th → Loser is <span style={{ color: '#ef4444' }}>eliminated</span>
+                </div>
+                <div>
+                  <span style={{ color: '#eab308' }}>Game 3:</span> Loser of G1 vs Winner of G2 → Winner gets <span style={{ color: '#22c55e' }}>8th seed</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 6: Playoffs */}
+            <div className="glass" style={{ padding: '24px', borderRadius: '16px', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                <span style={{ background: '#ff6b35', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>6</span>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600 }}>Playoff Quarterfinals (Best-of-5)</h3>
+              </div>
+              <p style={{ color: '#aaa', marginBottom: '16px', lineHeight: 1.6 }}>
+                Top 8 teams play <strong style={{ color: '#fff' }}>best-of-5 series</strong> with 2-2-1 home court format:
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginBottom: '16px' }}>
+                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '8px', textAlign: 'center' }}>
+                  <div style={{ color: '#22c55e', fontWeight: 600 }}>1st vs 8th</div>
+                </div>
+                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '8px', textAlign: 'center' }}>
+                  <div style={{ color: '#22c55e', fontWeight: 600 }}>4th vs 5th</div>
+                </div>
+                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '8px', textAlign: 'center' }}>
+                  <div style={{ color: '#22c55e', fontWeight: 600 }}>2nd vs 7th</div>
+                </div>
+                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '8px', textAlign: 'center' }}>
+                  <div style={{ color: '#22c55e', fontWeight: 600 }}>3rd vs 6th</div>
+                </div>
+              </div>
+              <div style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.3)', padding: '16px', borderRadius: '8px' }}>
+                <div style={{ color: '#3b82f6', fontWeight: 600, marginBottom: '8px' }}>2-2-1 Format:</div>
+                <div style={{ fontSize: '13px', color: '#aaa' }}>
+                  • Games 1, 2, 5: Higher seed has home court<br/>
+                  • Games 3, 4: Lower seed has home court<br/>
+                  • First to 3 wins advances to Final Four
+                </div>
+              </div>
+            </div>
+
+            {/* Step 7: Final Four */}
+            <div className="glass" style={{ padding: '24px', borderRadius: '16px', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                <span style={{ background: '#ff6b35', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>7</span>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600 }}>Final Four (Athens 2026)</h3>
+              </div>
+              <p style={{ color: '#aaa', marginBottom: '16px', lineHeight: 1.6 }}>
+                The Final Four is <strong style={{ color: '#fff' }}>single elimination</strong> at a neutral venue. This year it's in <strong style={{ color: '#22c55e' }}>Athens, Greece</strong>!
+              </p>
+              <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '8px', fontFamily: "'Space Mono', monospace", fontSize: '13px', marginBottom: '16px' }}>
+                <div style={{ marginBottom: '8px' }}><span style={{ color: '#a855f7' }}>Semifinal 1:</span> QF1 Winner vs QF2 Winner</div>
+                <div style={{ marginBottom: '8px' }}><span style={{ color: '#a855f7' }}>Semifinal 2:</span> QF3 Winner vs QF4 Winner</div>
+                <div><span style={{ color: '#eab308' }}>Final:</span> SF1 Winner vs SF2 Winner → <span style={{ color: '#22c55e' }}>Champion!</span></div>
+              </div>
+              <div style={{ background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', padding: '16px', borderRadius: '8px' }}>
+                <div style={{ color: '#22c55e', fontWeight: 600, marginBottom: '8px' }}>🏛️ Greek Team Home Advantage:</div>
+                <div style={{ fontSize: '13px', color: '#aaa' }}>
+                  Since the Final Four is in Athens, <strong>Panathinaikos</strong> and <strong>Olympiacos</strong> receive a <strong style={{ color: '#22c55e' }}>+10% win probability boost</strong> in all Final Four games. This simulates the massive home crowd advantage for Greek teams.
+                </div>
+              </div>
+            </div>
+
+            {/* Step 8: Results */}
+            <div className="glass" style={{ padding: '24px', borderRadius: '16px', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                <span style={{ background: '#ff6b35', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>8</span>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600 }}>Aggregate Results</h3>
+              </div>
+              <p style={{ color: '#aaa', marginBottom: '16px', lineHeight: 1.6 }}>
+                After running {SIMULATIONS.toLocaleString()} simulations, we calculate:
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '8px' }}>
+                  <div style={{ color: '#ff6b35', fontWeight: 600, fontSize: '13px' }}>Position Distribution</div>
+                  <div style={{ color: '#888', fontSize: '12px' }}>% chance of finishing 1st, 2nd, etc.</div>
+                </div>
+                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '8px' }}>
+                  <div style={{ color: '#22c55e', fontWeight: 600, fontSize: '13px' }}>Playoff Probability</div>
+                  <div style={{ color: '#888', fontSize: '12px' }}>% chance of making top 8</div>
+                </div>
+                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '8px' }}>
+                  <div style={{ color: '#a855f7', fontWeight: 600, fontSize: '13px' }}>Final Four Probability</div>
+                  <div style={{ color: '#888', fontSize: '12px' }}>% chance of reaching F4</div>
+                </div>
+                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '8px' }}>
+                  <div style={{ color: '#eab308', fontWeight: 600, fontSize: '13px' }}>Championship Probability</div>
+                  <div style={{ color: '#888', fontSize: '12px' }}>% chance of winning it all</div>
+                </div>
+              </div>
+            </div>
+
+            {/* What-If Note */}
+            <div className="glass" style={{ padding: '24px', borderRadius: '16px', background: 'linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 107, 53, 0.05))' }}>
+              <h3 style={{ margin: '0 0 12px', fontSize: '16px', fontWeight: 600, color: '#ff6b35' }}>💡 What-If Scenarios</h3>
+              <p style={{ color: '#aaa', margin: 0, lineHeight: 1.6, fontSize: '14px' }}>
+                In the <strong style={{ color: '#fff' }}>Schedule tab</strong>, you can set hypothetical outcomes for upcoming games. When you run the simulation, these pre-set results are used instead of calculating probabilities, allowing you to explore questions like "What if my team wins their next 5 games?"
+              </p>
+            </div>
           </div>
         )}
       </main>
