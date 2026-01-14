@@ -321,6 +321,7 @@ export default function EuroLeaguePredictor() {
 
   // New state for features
   const [isLoading, setIsLoading] = useState(false);
+  const [fetchProgress, setFetchProgress] = useState('');
   const [lastUpdate, setLastUpdate] = useState(null);
   const [headToHead, setHeadToHead] = useState({});
   const [favoriteTeam, setFavoriteTeam] = useState(null);
@@ -419,10 +420,12 @@ export default function EuroLeaguePredictor() {
   // Fetch live standings by calculating from game results
   const fetchLiveStandings = async () => {
     setIsLoading(true);
+    setFetchProgress('Starting...');
     try {
       await fetchStandingsFromGames();
     } finally {
       setIsLoading(false);
+      setFetchProgress('');
     }
   };
 
@@ -434,8 +437,10 @@ export default function EuroLeaguePredictor() {
         teamStats[t.code] = { ...t, wins: 0, losses: 0, ptsFor: 0, ptsAgainst: 0 };
       });
 
+      let gamesFound = 0;
       // Fetch completed games for all rounds (1-38)
       for (let round = 1; round <= 38; round++) {
+        setFetchProgress(`Fetching round ${round}/38...`);
         try {
           const response = await fetch(
             `${API_BASE}/competitions/${COMPETITION}/seasons/${SEASON_CODE}/games?phaseTypeCode=RS&roundNumber=${round}`,
@@ -450,6 +455,7 @@ export default function EuroLeaguePredictor() {
               // Check if game is finished (status === 'result' or has scores)
               const isPlayed = game.status === 'result' || (game.home?.score > 0 || game.away?.score > 0);
               if (isPlayed) {
+                gamesFound++;
                 const homeCode = game.home?.code;
                 const awayCode = game.away?.code;
                 const homeScore = game.home?.score || 0;
@@ -500,6 +506,7 @@ export default function EuroLeaguePredictor() {
         }
       }
 
+      setFetchProgress(`Found ${gamesFound} games, updating...`);
       const updatedTeams = Object.values(teamStats);
       if (updatedTeams.some(t => t.wins > 0 || t.losses > 0)) {
         setTeams(updatedTeams);
@@ -1872,9 +1879,9 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
             className="btn btn-secondary"
             onClick={fetchLiveStandings}
             disabled={isLoading}
-            style={{ fontSize: '13px' }}
+            style={{ fontSize: '13px', minWidth: isLoading ? '160px' : 'auto' }}
           >
-            {isLoading ? '...' : '↻ Refresh Data'}
+            {isLoading ? fetchProgress || 'Loading...' : '↻ Refresh Data'}
           </button>
           <button className="btn btn-secondary" onClick={resetData} style={{ fontSize: '13px' }}>
             Reset
