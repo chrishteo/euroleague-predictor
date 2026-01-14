@@ -58,10 +58,10 @@
   {
     "code": "OLY",
     "name": "Olympiacos Piraeus",
-    "wins": 12,
+    "wins": 13,
     "losses": 8,
-    "ptsFor": 1766,
-    "ptsAgainst": 1688
+    "ptsFor": 1870,
+    "ptsAgainst": 1754
   },
   {
     "code": "ZAL",
@@ -155,8 +155,8 @@
     "code": "PAR",
     "name": "Partizan Mozzart Bet Belgrade",
     "wins": 6,
-    "losses": 15,
-    "ptsFor": 1682,
-    "ptsAgainst": 1879
+    "losses": 16,
+    "ptsFor": 1748,
+    "ptsAgainst": 1983
   }
 ]

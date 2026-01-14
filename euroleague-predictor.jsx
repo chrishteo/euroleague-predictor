@@ -51,7 +51,7 @@ const initialTeams = [
   { code: 'ULK', name: 'Fenerbahce', wins: 13, losses: 7, ptsFor: 1640, ptsAgainst: 1596 },
   { code: 'MAD', name: 'Real Madrid', wins: 13, losses: 8, ptsFor: 1830, ptsAgainst: 1769 },
   { code: 'PAN', name: 'Panathinaikos', wins: 13, losses: 8, ptsFor: 1837, ptsAgainst: 1784 },
-  { code: 'OLY', name: 'Olympiacos', wins: 12, losses: 8, ptsFor: 1766, ptsAgainst: 1688 },
+  { code: 'OLY', name: 'Olympiacos', wins: 13, losses: 8, ptsFor: 1870, ptsAgainst: 1754 },
   { code: 'ZAL', name: 'Zalgiris Kaunas', wins: 12, losses: 9, ptsFor: 1834, ptsAgainst: 1708 },
   { code: 'RED', name: 'Crvena Zvezda', wins: 11, losses: 10, ptsFor: 1787, ptsAgainst: 1771 },
   { code: 'MIL', name: 'EA7 Milano', wins: 11, losses: 10, ptsFor: 1761, ptsAgainst: 1755 },
@@ -63,7 +63,7 @@ const initialTeams = [
   { code: 'MUN', name: 'Bayern Munich', wins: 7, losses: 14, ptsFor: 1666, ptsAgainst: 1777 },
   { code: 'IST', name: 'Anadolu Efes', wins: 6, losses: 15, ptsFor: 1644, ptsAgainst: 1752 },
   { code: 'ASV', name: 'ASVEL Lyon', wins: 6, losses: 15, ptsFor: 1625, ptsAgainst: 1802 },
-  { code: 'PAR', name: 'Partizan Belgrade', wins: 6, losses: 15, ptsFor: 1682, ptsAgainst: 1879 },
+  { code: 'PAR', name: 'Partizan Belgrade', wins: 6, losses: 16, ptsFor: 1748, ptsAgainst: 1983 },
 ];
 
 // Upcoming schedule data (rounds 22-38) - fetched from EuroLeague API on 2026-01-11
@@ -416,50 +416,17 @@ export default function EuroLeaguePredictor() {
     setSchedulePreview(preds);
   }, [teams, schedule, headToHead]);
 
-  // Fetch live standings from API
+  // Fetch live standings by calculating from game results
   const fetchLiveStandings = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(
-        `${API_BASE}/competitions/${COMPETITION}/seasons/${SEASON_CODE}/standings`,
-        {
-          headers: {
-            'Accept': 'application/json',
-          }
-        }
-      );
-
-      if (!response.ok) throw new Error('Failed to fetch standings');
-
-      const data = await response.json();
-      const standings = data.data || [];
-
-      // Map API data to our format
-      const updatedTeams = standings.map(team => ({
-        code: team.club?.code || team.code,
-        name: team.club?.name || team.name,
-        wins: team.gamesWon || 0,
-        losses: team.gamesLost || 0,
-        ptsFor: team.pointsFor || 0,
-        ptsAgainst: team.pointsAgainst || 0
-      }));
-
-      if (updatedTeams.length > 0) {
-        setTeams(updatedTeams);
-        await window.storage.set('euroleague-teams', JSON.stringify(updatedTeams));
-        setLastUpdate(new Date().toISOString());
-        await window.storage.set('euroleague-lastupdate', new Date().toISOString());
-      }
-    } catch (e) {
-      console.error('Failed to fetch standings:', e);
-      // Try alternative method - fetch from game results
       await fetchStandingsFromGames();
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Alternative method to build standings from game results
+  // Build standings from game results (API doesn't have a standings endpoint)
   const fetchStandingsFromGames = async () => {
     try {
       const teamStats = {};
@@ -467,8 +434,8 @@ export default function EuroLeaguePredictor() {
         teamStats[t.code] = { ...t, wins: 0, losses: 0, ptsFor: 0, ptsAgainst: 0 };
       });
 
-      // Fetch completed games for each round
-      for (let round = 1; round <= 21; round++) {
+      // Fetch completed games for all rounds (1-38)
+      for (let round = 1; round <= 38; round++) {
         try {
           const response = await fetch(
             `${API_BASE}/competitions/${COMPETITION}/seasons/${SEASON_CODE}/games?phaseTypeCode=RS&roundNumber=${round}`,
@@ -480,7 +447,9 @@ export default function EuroLeaguePredictor() {
             const games = data.data || [];
 
             games.forEach(game => {
-              if (game.played) {
+              // Check if game is finished (status === 'result' or has scores)
+              const isPlayed = game.status === 'result' || (game.home?.score > 0 || game.away?.score > 0);
+              if (isPlayed) {
                 const homeCode = game.home?.code;
                 const awayCode = game.away?.code;
                 const homeScore = game.home?.score || 0;
