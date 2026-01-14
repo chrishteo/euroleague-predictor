@@ -16,10 +16,12 @@ A Monte Carlo simulation-based prediction system for the EuroLeague basketball s
 - Color-coded playoff zones (Top 6, Play-In 7-10, Eliminated 11-20)
 - Team ratings based on performance
 
-### Schedule & What-If
+### Schedule & Results
 - View upcoming games with win probabilities
 - Set what-if outcomes to see how results affect standings
 - Filter by round
+- **Results tab**: View all played games with final scores
+- Live data refresh from official EuroLeague API
 
 ### Predictions
 - Monte Carlo simulation (5,000 iterations)
@@ -46,6 +48,13 @@ A Monte Carlo simulation-based prediction system for the EuroLeague basketball s
 - Select a favorite team for personalized tracking
 - See all upcoming games for your team
 - Highlighted throughout the app
+
+### How It Works
+- Step-by-step guide explaining the prediction methodology
+- Live examples using current team data
+- Covers: Team ratings, win probability, Monte Carlo simulation
+- Explains Play-In, Playoffs (Best-of-5), and Final Four format
+- Greek team home advantage in Athens 2026
 
 ### Data Persistence
 - Simulation results saved to browser storage
@@ -90,8 +99,9 @@ Athens 2026 Final Four: Panathinaikos and Olympiacos receive a slight boost in F
 
 ## Data Sources
 
-- Official EuroLeague standings and schedule
-- Manual updates for postponed games
+- Official EuroLeague API (live game results)
+- Standings calculated from official game data
+- Real-time refresh via "Refresh Data" button
 
 ## License
 
