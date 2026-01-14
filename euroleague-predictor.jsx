@@ -323,6 +323,8 @@ export default function EuroLeaguePredictor() {
   const [isLoading, setIsLoading] = useState(false);
   const [fetchProgress, setFetchProgress] = useState('');
   const [lastUpdate, setLastUpdate] = useState(null);
+  const [playedGames, setPlayedGames] = useState([]);
+  const [scheduleView, setScheduleView] = useState('upcoming'); // 'upcoming' or 'results'
   const [headToHead, setHeadToHead] = useState({});
   const [favoriteTeam, setFavoriteTeam] = useState(null);
   const [whatIfResults, setWhatIfResults] = useState({});
@@ -355,6 +357,7 @@ export default function EuroLeaguePredictor() {
         const predictionsData = await window.storage.get('euroleague-predictions');
         const playoffsData = await window.storage.get('euroleague-playoffs');
         const gamePredictionsData = await window.storage.get('euroleague-gamepredictions');
+        const playedData = await window.storage.get('euroleague-played');
 
         if (teamsData?.value) setTeams(JSON.parse(teamsData.value));
         if (matchesData?.value) setMatches(JSON.parse(matchesData.value));
@@ -365,6 +368,7 @@ export default function EuroLeaguePredictor() {
         if (predictionsData?.value) setPredictions(JSON.parse(predictionsData.value));
         if (playoffsData?.value) setPlayoffResults(JSON.parse(playoffsData.value));
         if (gamePredictionsData?.value) setGamePredictions(JSON.parse(gamePredictionsData.value));
+        if (playedData?.value) setPlayedGames(JSON.parse(playedData.value));
       } catch (e) {
         console.log('No saved data found, using defaults');
       }
@@ -438,6 +442,8 @@ export default function EuroLeaguePredictor() {
       });
 
       let gamesFound = 0;
+      const fetchedPlayedGames = [];
+
       // Fetch completed games for all rounds (1-38)
       for (let round = 1; round <= 38; round++) {
         setFetchProgress(`Fetching round ${round}/38...`);
@@ -460,6 +466,17 @@ export default function EuroLeaguePredictor() {
                 const awayCode = game.away?.code;
                 const homeScore = game.home?.score || 0;
                 const awayScore = game.away?.score || 0;
+
+                // Store played game result
+                fetchedPlayedGames.push({
+                  round: round,
+                  date: game.date,
+                  home: homeCode,
+                  away: awayCode,
+                  homeScore,
+                  awayScore,
+                  winner: homeScore > awayScore ? homeCode : awayCode
+                });
 
                 if (teamStats[homeCode]) {
                   teamStats[homeCode].ptsFor += homeScore;
@@ -510,7 +527,9 @@ export default function EuroLeaguePredictor() {
       const updatedTeams = Object.values(teamStats);
       if (updatedTeams.some(t => t.wins > 0 || t.losses > 0)) {
         setTeams(updatedTeams);
+        setPlayedGames(fetchedPlayedGames);
         await window.storage.set('euroleague-teams', JSON.stringify(updatedTeams));
+        await window.storage.set('euroleague-played', JSON.stringify(fetchedPlayedGames));
         await window.storage.set('euroleague-h2h', JSON.stringify(headToHead));
         setLastUpdate(new Date().toISOString());
         await window.storage.set('euroleague-lastupdate', new Date().toISOString());
@@ -2053,6 +2072,26 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
         {/* Schedule Tab */}
         {activeTab === 'schedule' && (
           <div>
+            {/* Toggle between Results and Upcoming */}
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+              <button
+                className={`btn ${scheduleView === 'upcoming' ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => setScheduleView('upcoming')}
+                style={{ fontSize: '14px' }}
+              >
+                Upcoming ({schedule.length})
+              </button>
+              <button
+                className={`btn ${scheduleView === 'results' ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => setScheduleView('results')}
+                style={{ fontSize: '14px' }}
+              >
+                Results ({playedGames.length})
+              </button>
+            </div>
+
+            {scheduleView === 'upcoming' && (
+            <>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <div>
                 <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 600 }}>Upcoming Schedule</h2>
@@ -2188,6 +2227,116 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                   );
                 })}
             </div>
+            </>
+            )}
+
+            {/* Results View */}
+            {scheduleView === 'results' && (
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                <div>
+                  <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 600 }}>Game Results</h2>
+                  <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#666' }}>
+                    {playedGames.length} games played · See if predictions were correct
+                  </p>
+                </div>
+              </div>
+
+              {playedGames.length === 0 ? (
+                <div className="glass" style={{ padding: '40px', textAlign: 'center', borderRadius: '12px' }}>
+                  <p style={{ color: '#666', margin: 0 }}>
+                    No results yet. Click "Refresh Data" to fetch played games from EuroLeague.
+                  </p>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {[...playedGames].reverse().map((game, idx) => {
+                    const homeTeam = teams.find(t => t.code === game.home);
+                    const awayTeam = teams.find(t => t.code === game.away);
+                    const homeWon = game.homeScore > game.awayScore;
+
+                    // Calculate what our prediction would have been
+                    const homeRating = 1500 + ((homeTeam?.wins || 0) / Math.max((homeTeam?.wins || 0) + (homeTeam?.losses || 0), 1) - 0.5) * 400;
+                    const awayRating = 1500 + ((awayTeam?.wins || 0) / Math.max((awayTeam?.wins || 0) + (awayTeam?.losses || 0), 1) - 0.5) * 400;
+                    const predictedHomeWinProb = 1 / (1 + Math.pow(10, (awayRating - homeRating - 50) / 400));
+                    const predictedHomeWin = predictedHomeWinProb > 0.5;
+                    const predictionCorrect = predictedHomeWin === homeWon;
+
+                    return (
+                      <div key={idx} className="glass" style={{
+                        padding: '16px 24px',
+                        borderRadius: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        borderLeft: predictionCorrect ? '3px solid #22c55e' : '3px solid #ef4444'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1 }}>
+                          <div style={{
+                            fontSize: '12px',
+                            color: '#ff6b35',
+                            fontFamily: "'Space Mono', monospace",
+                            minWidth: '40px',
+                            fontWeight: 600
+                          }}>
+                            R{game.round}
+                          </div>
+
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
+                            <span style={{
+                              fontWeight: homeWon ? 700 : 400,
+                              color: homeWon ? '#22c55e' : '#888',
+                              minWidth: '140px',
+                              textAlign: 'right'
+                            }}>
+                              {homeTeam?.name || game.home}
+                            </span>
+                            <span style={{
+                              fontFamily: "'Space Mono', monospace",
+                              fontSize: '16px',
+                              fontWeight: 700,
+                              minWidth: '70px',
+                              textAlign: 'center'
+                            }}>
+                              {game.homeScore} - {game.awayScore}
+                            </span>
+                            <span style={{
+                              fontWeight: !homeWon ? 700 : 400,
+                              color: !homeWon ? '#22c55e' : '#888',
+                              minWidth: '140px'
+                            }}>
+                              {awayTeam?.name || game.away}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '12px',
+                          fontSize: '13px'
+                        }}>
+                          <span style={{ color: '#666' }}>
+                            Predicted: {(predictedHomeWinProb * 100).toFixed(0)}% {homeTeam?.name || game.home}
+                          </span>
+                          <span style={{
+                            padding: '4px 8px',
+                            borderRadius: '4px',
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            background: predictionCorrect ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+                            color: predictionCorrect ? '#22c55e' : '#ef4444'
+                          }}>
+                            {predictionCorrect ? '✓ Correct' : '✗ Wrong'}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+            )}
           </div>
         )}
 
