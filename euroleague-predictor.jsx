@@ -458,8 +458,8 @@ export default function EuroLeaguePredictor() {
             const games = data.data || [];
 
             games.forEach(game => {
-              // Check if game is finished (status === 'result' or has scores)
-              const isPlayed = game.status === 'result' || (game.home?.score > 0 || game.away?.score > 0);
+              // Check if game is finished (only trust status, not scores - live games have scores too)
+              const isPlayed = game.status === 'result';
               if (isPlayed) {
                 gamesFound++;
                 const homeCode = game.home?.code;
