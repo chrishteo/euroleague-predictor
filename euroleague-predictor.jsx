@@ -326,7 +326,7 @@ const calculateRating = (team, recentForm = null) => {
     }
   }
 
-  return 1500 + (winPct - 0.5) * 400 + avgMargin * 10 + talent + clutch;
+  return 1500 + (winPct - 0.5) * 400 + avgMargin * 5 + talent + clutch;
 };
 
 // Expected win probability based on ratings
