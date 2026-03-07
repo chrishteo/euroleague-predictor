@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import playerStatsData from './euroleague_data/player_stats.json';
+import initialGamesData from './euroleague_data/games.json';
 
 // Team logo URL helper - EuroLeague CDN
 const getTeamLogo = (teamCode) => {
@@ -261,14 +263,57 @@ const initialSchedule = [
 
 const TOTAL_GAMES = 38;
 const SIMULATIONS = 5000;
+const FORM_WINDOW = 5; // Last N games for recent form
+const FORM_WEIGHT = 0.4; // 40% recent form, 60% season-long
+const PIR_BONUS_SCALE = 30; // Max ±30 rating points from talent
 
-// Calculate ELO-like rating based on wins and point differential
-const calculateRating = (team) => {
+// Pre-compute team PIR bonuses from player stats (static)
+const computeTeamPIR = () => {
+  const teamPIR = {};
+  // Group players by team, take top 8 by PIR
+  const byTeam = {};
+  playerStatsData.forEach(p => {
+    const code = p['player.team.code'];
+    if (!byTeam[code]) byTeam[code] = [];
+    byTeam[code].push(p.pir);
+  });
+  Object.keys(byTeam).forEach(code => {
+    const sorted = byTeam[code].sort((a, b) => b - a);
+    teamPIR[code] = sorted.slice(0, 8).reduce((sum, v) => sum + v, 0);
+  });
+  // Normalize: average = 0, scale to ±PIR_BONUS_SCALE
+  const values = Object.values(teamPIR);
+  const avg = values.reduce((s, v) => s + v, 0) / values.length;
+  const max = Math.max(...values.map(v => Math.abs(v - avg)));
+  const normalized = {};
+  Object.keys(teamPIR).forEach(code => {
+    normalized[code] = max > 0 ? ((teamPIR[code] - avg) / max) * PIR_BONUS_SCALE : 0;
+  });
+  return normalized;
+};
+const teamPIRBonus = computeTeamPIR();
+
+// Calculate ELO-like rating with recent form and talent
+const calculateRating = (team, recentForm = null) => {
   const games = team.wins + team.losses;
   if (games === 0) return 1500;
-  const winPct = team.wins / games;
-  const avgMargin = (team.ptsFor - team.ptsAgainst) / games;
-  return 1500 + (winPct - 0.5) * 400 + avgMargin * 10;
+
+  const seasonWinPct = team.wins / games;
+  const seasonMargin = (team.ptsFor - team.ptsAgainst) / games;
+
+  // Blend with recent form if available
+  let winPct = seasonWinPct;
+  let avgMargin = seasonMargin;
+  if (recentForm && recentForm[team.code]) {
+    const form = recentForm[team.code];
+    winPct = (1 - FORM_WEIGHT) * seasonWinPct + FORM_WEIGHT * form.winPct;
+    avgMargin = (1 - FORM_WEIGHT) * seasonMargin + FORM_WEIGHT * form.avgMargin;
+  }
+
+  // Talent bonus from PIR
+  const talent = teamPIRBonus[team.code] || 0;
+
+  return 1500 + (winPct - 0.5) * 400 + avgMargin * 10 + talent;
 };
 
 // Expected win probability based on ratings
@@ -388,6 +433,43 @@ export default function EuroLeaguePredictor() {
     }
   };
 
+  // Compute recent form (last N games) for each team
+  const recentForm = useMemo(() => {
+    // Use playedGames if available, otherwise fall back to initial games data
+    const games = playedGames.length > 0 ? playedGames : initialGamesData;
+    if (games.length === 0) return {};
+
+    const form = {};
+    // Sort by round desc to get most recent first
+    const sorted = [...games].sort((a, b) => b.round - a.round);
+
+    teams.forEach(t => {
+      const teamGames = sorted.filter(g => g.home === t.code || g.away === t.code).slice(0, FORM_WINDOW);
+      if (teamGames.length === 0) {
+        form[t.code] = { winPct: 0.5, avgMargin: 0, results: [] };
+        return;
+      }
+      let wins = 0;
+      let totalMargin = 0;
+      const results = [];
+      teamGames.forEach(g => {
+        const isHome = g.home === t.code;
+        const myScore = isHome ? g.homeScore : g.awayScore;
+        const oppScore = isHome ? g.awayScore : g.homeScore;
+        const won = myScore > oppScore;
+        if (won) wins++;
+        totalMargin += myScore - oppScore;
+        results.push(won ? 'W' : 'L');
+      });
+      form[t.code] = {
+        winPct: wins / teamGames.length,
+        avgMargin: totalMargin / teamGames.length,
+        results // Most recent first
+      };
+    });
+    return form;
+  }, [playedGames, teams]);
+
   // Calculate game predictions when teams or schedule change
   // Calculate schedule previews (for Schedule tab - pre-simulation win probabilities)
   const [schedulePreview, setSchedulePreview] = useState({});
@@ -395,7 +477,7 @@ export default function EuroLeaguePredictor() {
   useEffect(() => {
     const ratings = {};
     teams.forEach(t => {
-      ratings[t.code] = calculateRating(t);
+      ratings[t.code] = calculateRating(t, recentForm);
     });
 
     const preds = {};
@@ -421,7 +503,7 @@ export default function EuroLeaguePredictor() {
       };
     });
     setSchedulePreview(preds);
-  }, [teams, schedule, headToHead]);
+  }, [teams, schedule, headToHead, recentForm]);
 
   // Fetch live standings by calculating from game results
   const fetchLiveStandings = async () => {
@@ -682,7 +764,7 @@ export default function EuroLeaguePredictor() {
   const calculateDeterministic = () => {
     const ratings = {};
     teams.forEach(t => {
-      ratings[t.code] = calculateRating(t);
+      ratings[t.code] = calculateRating(t, recentForm);
     });
 
     // Clone current standings
@@ -749,7 +831,7 @@ export default function EuroLeaguePredictor() {
     setTimeout(() => {
       const ratings = {};
       teams.forEach(t => {
-        ratings[t.code] = calculateRating(t);
+        ratings[t.code] = calculateRating(t, recentForm);
       });
 
       // Track position finishes for each team
@@ -2044,6 +2126,7 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                     <th className="hide-mobile" style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>PTS+</th>
                     <th className="hide-mobile" style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>PTS-</th>
                     <th style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>+/-</th>
+                    <th className="hide-mobile" style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>FORM</th>
                     <th className="hide-mobile" style={{ padding: '16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 500 }}>RATING</th>
                   </tr>
                 </thead>
@@ -2112,8 +2195,20 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
                         }}>
                           {diff > 0 ? '+' : ''}{diff}
                         </td>
+                        <td className="hide-mobile" style={{ padding: '14px 16px', textAlign: 'center' }}>
+                          <div style={{ display: 'flex', gap: '3px', justifyContent: 'center' }}>
+                            {(recentForm[team.code]?.results || []).map((r, i) => (
+                              <span key={i} style={{
+                                width: '8px',
+                                height: '8px',
+                                borderRadius: '50%',
+                                background: r === 'W' ? '#22c55e' : '#ef4444'
+                              }} title={r} />
+                            ))}
+                          </div>
+                        </td>
                         <td className="hide-mobile" style={{ padding: '14px 16px', textAlign: 'center', fontFamily: "'Space Mono', monospace", color: '#ff6b35', fontWeight: 600 }}>
-                          {calculateRating(team).toFixed(0)}
+                          {calculateRating(team, recentForm).toFixed(0)}
                         </td>
                       </tr>
                     );
