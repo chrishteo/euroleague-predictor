@@ -266,6 +266,8 @@ const SIMULATIONS = 5000;
 const FORM_WINDOW = 5; // Last N games for recent form
 const FORM_WEIGHT = 0.4; // 40% recent form, 60% season-long
 const PIR_BONUS_SCALE = 30; // Max ±30 rating points from talent
+const CLUTCH_MARGIN = 5; // Games decided by ≤5 points are "close"
+const CLUTCH_BONUS_SCALE = 20; // Max ±20 rating points from clutch factor
 
 // Pre-compute team PIR bonuses from player stats (static)
 const computeTeamPIR = () => {
@@ -313,7 +315,18 @@ const calculateRating = (team, recentForm = null) => {
   // Talent bonus from PIR
   const talent = teamPIRBonus[team.code] || 0;
 
-  return 1500 + (winPct - 0.5) * 400 + avgMargin * 10 + talent;
+  // Clutch bonus: teams that win close games are proven closers
+  let clutch = 0;
+  if (recentForm && recentForm[team.code] && recentForm[team.code].clutchRecord) {
+    const cr = recentForm[team.code].clutchRecord;
+    const closeGames = cr.wins + cr.losses;
+    if (closeGames >= 2) {
+      const clutchWinPct = cr.wins / closeGames;
+      clutch = (clutchWinPct - 0.5) * CLUTCH_BONUS_SCALE * 2; // ±CLUTCH_BONUS_SCALE range
+    }
+  }
+
+  return 1500 + (winPct - 0.5) * 400 + avgMargin * 10 + talent + clutch;
 };
 
 // Expected win probability based on ratings
@@ -444,9 +457,10 @@ export default function EuroLeaguePredictor() {
     const sorted = [...games].sort((a, b) => b.round - a.round);
 
     teams.forEach(t => {
-      const teamGames = sorted.filter(g => g.home === t.code || g.away === t.code).slice(0, FORM_WINDOW);
+      const allTeamGames = sorted.filter(g => g.home === t.code || g.away === t.code);
+      const teamGames = allTeamGames.slice(0, FORM_WINDOW);
       if (teamGames.length === 0) {
-        form[t.code] = { winPct: 0.5, avgMargin: 0, results: [] };
+        form[t.code] = { winPct: 0.5, avgMargin: 0, results: [], clutchRecord: { wins: 0, losses: 0 } };
         return;
       }
       let wins = 0;
@@ -461,10 +475,25 @@ export default function EuroLeaguePredictor() {
         totalMargin += myScore - oppScore;
         results.push(won ? 'W' : 'L');
       });
+
+      // Clutch record: close games (margin ≤ CLUTCH_MARGIN) across all games
+      let clutchWins = 0, clutchLosses = 0;
+      allTeamGames.forEach(g => {
+        const isHome = g.home === t.code;
+        const myScore = isHome ? g.homeScore : g.awayScore;
+        const oppScore = isHome ? g.awayScore : g.homeScore;
+        const margin = Math.abs(myScore - oppScore);
+        if (margin <= CLUTCH_MARGIN) {
+          if (myScore > oppScore) clutchWins++;
+          else clutchLosses++;
+        }
+      });
+
       form[t.code] = {
         winPct: wins / teamGames.length,
         avgMargin: totalMargin / teamGames.length,
-        results // Most recent first
+        results, // Most recent first
+        clutchRecord: { wins: clutchWins, losses: clutchLosses }
       };
     });
     return form;
