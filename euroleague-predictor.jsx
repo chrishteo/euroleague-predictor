@@ -337,6 +337,8 @@ export default function EuroLeaguePredictor() {
   const [simulationProgress, setSimulationProgress] = useState(0);
   const [compareTeams, setCompareTeams] = useState({ team1: '', team2: '' });
   const [showComparison, setShowComparison] = useState(false);
+  const [deterministicResults, setDeterministicResults] = useState(null);
+  const [myPicksRound, setMyPicksRound] = useState(0); // 0 = all rounds
 
   // Race animation state
   const [raceRound, setRaceRound] = useState(1);
@@ -674,6 +676,70 @@ export default function EuroLeaguePredictor() {
       return updated;
     });
     setPredictions(null);
+  };
+
+  // Calculate deterministic standings from user picks
+  const calculateDeterministic = () => {
+    const ratings = {};
+    teams.forEach(t => {
+      ratings[t.code] = calculateRating(t);
+    });
+
+    // Clone current standings
+    const simTeams = {};
+    teams.forEach(t => {
+      simTeams[t.code] = {
+        ...t,
+        projWins: t.wins,
+        projLosses: t.losses,
+        projPtsFor: t.ptsFor,
+        projPtsAgainst: t.ptsAgainst
+      };
+    });
+
+    // Apply each scheduled game
+    schedule.forEach((game, idx) => {
+      const homeTeam = simTeams[game.home];
+      const awayTeam = simTeams[game.away];
+      if (!homeTeam || !awayTeam) return;
+
+      // Skip played games
+      if (playedGames.some(pg => pg.home === game.home && pg.away === game.away && pg.round === game.round)) return;
+
+      let homeWins;
+      if (whatIfResults[idx]) {
+        homeWins = whatIfResults[idx] === 'home';
+      } else {
+        // Use algorithm's predicted winner
+        const h2hKey = `${game.home}-${game.away}`;
+        const h2hRecord = headToHead[h2hKey];
+        let h2hBonus = 0;
+        if (h2hRecord && (h2hRecord.wins + h2hRecord.losses) > 0) {
+          const h2hWinRate = h2hRecord.wins / (h2hRecord.wins + h2hRecord.losses);
+          h2hBonus = (h2hWinRate - 0.5) * 50;
+        }
+        const prob = expectedWinProb(ratings[game.home], ratings[game.away], true, h2hBonus);
+        homeWins = prob >= 0.5;
+      }
+
+      if (homeWins) {
+        homeTeam.projWins++;
+        awayTeam.projLosses++;
+      } else {
+        awayTeam.projWins++;
+        homeTeam.projLosses++;
+      }
+    });
+
+    // Sort by wins desc, then point diff
+    const results = Object.values(simTeams).sort((a, b) => {
+      if (b.projWins !== a.projWins) return b.projWins - a.projWins;
+      const diffA = a.projPtsFor - a.projPtsAgainst;
+      const diffB = b.projPtsFor - b.projPtsAgainst;
+      return diffB - diffA;
+    });
+
+    setDeterministicResults(results);
   };
 
   // Run Monte Carlo simulation using actual schedule
@@ -1943,6 +2009,9 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
         )}
         <button className={`tab ${activeTab === 'matches' ? 'active' : ''}`} onClick={() => setActiveTab('matches')}>
           Matches ({matches.length})
+        </button>
+        <button className={`tab ${activeTab === 'mypicks' ? 'active' : ''}`} onClick={() => setActiveTab('mypicks')}>
+          My Predictions
         </button>
         <button className={`tab ${activeTab === 'methodology' ? 'active' : ''}`} onClick={() => setActiveTab('methodology')}>
           How It Works
@@ -3524,6 +3593,288 @@ ${f4Favorites.map(t => `${t.name}: ${t.finalFour.toFixed(0)}%`).join('\n')}
             )}
           </div>
         )}
+
+        {/* My Predictions Tab */}
+        {activeTab === 'mypicks' && (() => {
+          const upcomingGames = schedule.filter(g => !playedGames.some(pg => pg.home === g.home && pg.away === g.away && pg.round === g.round));
+          const rounds = [...new Set(upcomingGames.map(g => g.round))].sort((a, b) => a - b);
+          const pickedCount = Object.keys(whatIfResults).length;
+          const totalGames = upcomingGames.length;
+
+          return (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 600 }}>My Predictions</h2>
+                <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#666' }}>
+                  Pick winners for each game, then calculate standings or run a simulation
+                </p>
+              </div>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <div style={{
+                  padding: '8px 16px',
+                  background: pickedCount === totalGames ? 'rgba(34, 197, 94, 0.15)' : 'rgba(255, 107, 53, 0.15)',
+                  borderRadius: '8px',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  color: pickedCount === totalGames ? '#22c55e' : '#ff6b35',
+                  fontFamily: "'Space Mono', monospace"
+                }}>
+                  {pickedCount} / {totalGames} picked
+                </div>
+                <button
+                  className="btn btn-secondary btn-small"
+                  onClick={() => {
+                    const updated = { ...whatIfResults };
+                    schedule.forEach((game, idx) => {
+                      if (playedGames.some(pg => pg.home === game.home && pg.away === game.away && pg.round === game.round)) return;
+                      if (updated[idx]) return; // Don't override existing picks
+                      const pred = schedulePreview[idx];
+                      if (pred) {
+                        updated[idx] = pred.homeWinProb >= 50 ? 'home' : 'away';
+                      }
+                    });
+                    setWhatIfResults(updated);
+                    window.storage.set('euroleague-whatif', JSON.stringify(updated));
+                    setPredictions(null);
+                  }}
+                >
+                  Auto-fill unpicked
+                </button>
+                {pickedCount > 0 && (
+                  <button
+                    className="btn btn-secondary btn-small"
+                    onClick={() => { setWhatIfResults({}); window.storage.set('euroleague-whatif', '{}'); setPredictions(null); setDeterministicResults(null); }}
+                  >
+                    Clear all
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Round filter */}
+            <div style={{ display: 'flex', gap: '6px', marginBottom: '20px', flexWrap: 'wrap' }}>
+              <button
+                className={`btn btn-small ${myPicksRound === 0 ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => setMyPicksRound(0)}
+              >
+                All
+              </button>
+              {rounds.map(r => (
+                <button
+                  key={r}
+                  className={`btn btn-small ${myPicksRound === r ? 'btn-primary' : 'btn-secondary'}`}
+                  onClick={() => setMyPicksRound(r)}
+                >
+                  R{r}
+                </button>
+              ))}
+            </div>
+
+            {/* Game picker */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '24px' }}>
+              {(myPicksRound === 0 ? rounds : [myPicksRound]).map(round => {
+                const roundGames = upcomingGames.filter(g => g.round === round);
+                return (
+                  <div key={round}>
+                    <div style={{
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      color: '#ff6b35',
+                      fontFamily: "'Space Mono', monospace",
+                      padding: '12px 0 6px',
+                      borderBottom: '1px solid rgba(255, 255, 255, 0.06)'
+                    }}>
+                      ROUND {round}
+                    </div>
+                    {roundGames.map((game) => {
+                      const actualIdx = schedule.findIndex(g => g === game);
+                      const homeTeam = teams.find(t => t.code === game.home);
+                      const awayTeam = teams.find(t => t.code === game.away);
+                      const pred = schedulePreview[actualIdx];
+                      const pick = whatIfResults[actualIdx];
+
+                      return (
+                        <div key={actualIdx} style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          padding: '10px 0',
+                          borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+                          gap: '8px'
+                        }}>
+                          {/* Home team - clickable */}
+                          <div
+                            onClick={() => setWhatIfResult(actualIdx, pick === 'home' ? null : 'home')}
+                            style={{
+                              flex: 1,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'flex-end',
+                              gap: '8px',
+                              padding: '8px 12px',
+                              borderRadius: '8px',
+                              cursor: 'pointer',
+                              background: pick === 'home' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+                              border: pick === 'home' ? '1px solid rgba(34, 197, 94, 0.4)' : '1px solid transparent',
+                              opacity: pick === 'away' ? 0.4 : 1,
+                              transition: 'all 0.15s ease'
+                            }}
+                          >
+                            {pred && (
+                              <span style={{ fontSize: '11px', color: '#888', fontFamily: "'Space Mono', monospace" }}>
+                                {pred.homeWinProb.toFixed(0)}%
+                              </span>
+                            )}
+                            <span style={{ fontWeight: pick === 'home' ? 700 : 500, fontSize: '14px', color: pick === 'home' ? '#22c55e' : '#e0e0e0' }}>
+                              {homeTeam?.name || game.home}
+                            </span>
+                            <img src={getTeamLogo(game.home)} alt="" style={{ width: '24px', height: '24px', borderRadius: '4px' }} />
+                          </div>
+
+                          {/* VS */}
+                          <div style={{
+                            fontSize: '11px',
+                            color: '#666',
+                            fontWeight: 600,
+                            fontFamily: "'Space Mono', monospace",
+                            flexShrink: 0,
+                            width: '28px',
+                            textAlign: 'center'
+                          }}>
+                            vs
+                          </div>
+
+                          {/* Away team - clickable */}
+                          <div
+                            onClick={() => setWhatIfResult(actualIdx, pick === 'away' ? null : 'away')}
+                            style={{
+                              flex: 1,
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '8px',
+                              padding: '8px 12px',
+                              borderRadius: '8px',
+                              cursor: 'pointer',
+                              background: pick === 'away' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+                              border: pick === 'away' ? '1px solid rgba(34, 197, 94, 0.4)' : '1px solid transparent',
+                              opacity: pick === 'home' ? 0.4 : 1,
+                              transition: 'all 0.15s ease'
+                            }}
+                          >
+                            <img src={getTeamLogo(game.away)} alt="" style={{ width: '24px', height: '24px', borderRadius: '4px' }} />
+                            <span style={{ fontWeight: pick === 'away' ? 700 : 500, fontSize: '14px', color: pick === 'away' ? '#22c55e' : '#e0e0e0' }}>
+                              {awayTeam?.name || game.away}
+                            </span>
+                            {pred && (
+                              <span style={{ fontSize: '11px', color: '#888', fontFamily: "'Space Mono', monospace" }}>
+                                {pred.awayWinProb.toFixed(0)}%
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Action buttons */}
+            <div style={{ display: 'flex', gap: '12px', marginBottom: '32px', flexWrap: 'wrap' }}>
+              <button
+                className="btn btn-primary"
+                onClick={calculateDeterministic}
+              >
+                Calculate Standings
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={() => { runSimulation(); setActiveTab('predictions'); }}
+                style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}
+              >
+                Run Simulation ({pickedCount} picks locked)
+              </button>
+            </div>
+
+            {/* Deterministic Results */}
+            {deterministicResults && (
+              <div>
+                <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '16px' }}>Projected Final Standings</h3>
+                <div className="glass" style={{ borderRadius: '12px', overflow: 'hidden' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                        <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', color: '#888', fontWeight: 600 }}>#</th>
+                        <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', color: '#888', fontWeight: 600 }}>Team</th>
+                        <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 600 }}>W</th>
+                        <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 600 }}>L</th>
+                        <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: 600 }}>Win%</th>
+                        <th style={{ padding: '12px 16px', textAlign: 'right', fontSize: '12px', color: '#888', fontWeight: 600 }}>Zone</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {deterministicResults.map((team, idx) => {
+                        const zone = idx < 6 ? 'playoff' : idx < 10 ? 'playin' : 'out';
+                        const zoneColor = zone === 'playoff' ? '#22c55e' : zone === 'playin' ? '#eab308' : '#ef4444';
+                        const zoneLabel = zone === 'playoff' ? 'Playoff' : zone === 'playin' ? 'Play-In' : 'Eliminated';
+                        const totalGames = team.projWins + team.projLosses;
+                        const winPct = totalGames > 0 ? ((team.projWins / totalGames) * 100).toFixed(1) : '0.0';
+                        const isFav = team.code === favoriteTeam;
+
+                        return (
+                          <tr key={team.code} style={{
+                            borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+                            background: isFav ? 'rgba(255, 107, 53, 0.08)' : (idx === 5 || idx === 9) ? 'rgba(255, 255, 255, 0.02)' : 'transparent'
+                          }}>
+                            <td style={{ padding: '10px 16px', fontSize: '14px', fontWeight: 600, color: zoneColor }}>
+                              {idx + 1}
+                            </td>
+                            <td style={{ padding: '10px 16px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <img src={getTeamLogo(team.code)} alt="" style={{ width: '24px', height: '24px', borderRadius: '4px' }} />
+                                <span style={{ fontWeight: isFav ? 700 : 500, fontSize: '14px' }}>
+                                  {team.name} {isFav && '⭐'}
+                                </span>
+                              </div>
+                            </td>
+                            <td style={{ padding: '10px 16px', textAlign: 'center', fontFamily: "'Space Mono', monospace", fontSize: '14px', fontWeight: 600, color: '#22c55e' }}>
+                              {team.projWins}
+                            </td>
+                            <td style={{ padding: '10px 16px', textAlign: 'center', fontFamily: "'Space Mono', monospace", fontSize: '14px', color: '#ef4444' }}>
+                              {team.projLosses}
+                            </td>
+                            <td style={{ padding: '10px 16px', textAlign: 'center', fontFamily: "'Space Mono', monospace", fontSize: '13px', color: '#aaa' }}>
+                              {winPct}%
+                            </td>
+                            <td style={{ padding: '10px 16px', textAlign: 'right' }}>
+                              <span style={{
+                                padding: '4px 10px',
+                                borderRadius: '6px',
+                                fontSize: '11px',
+                                fontWeight: 600,
+                                background: `${zoneColor}20`,
+                                color: zoneColor
+                              }}>
+                                {zoneLabel}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+                {/* Zone divider lines info */}
+                <div style={{ display: 'flex', gap: '16px', marginTop: '12px', fontSize: '12px', color: '#888' }}>
+                  <span><span style={{ color: '#22c55e' }}>●</span> Top 6 = Direct Playoffs</span>
+                  <span><span style={{ color: '#eab308' }}>●</span> 7-10 = Play-In Tournament</span>
+                  <span><span style={{ color: '#ef4444' }}>●</span> 11-20 = Eliminated</span>
+                </div>
+              </div>
+            )}
+          </div>
+          );
+        })()}
 
         {/* Race Tab */}
         {activeTab === 'race' && (
